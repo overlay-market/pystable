@@ -4,10 +4,10 @@ Python wrapper for the [`libstable`](https://www.jstatsoft.org/article/view/v078
 
 ## Example
 
-```
+To fit with ML estimation:
+
+```python
 import pystable
 
 alpha, beta, loc, scale = pystable.fit(data)
 ```
-
-uses ML estimation for fitting procedure.

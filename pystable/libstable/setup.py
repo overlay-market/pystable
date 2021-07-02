@@ -5,7 +5,7 @@ from pybind11.setup_helpers import Pybind11Extension
 ext_modules = [
     Pybind11Extension(
         "libstable",
-        sorted(glob("src/*.cpp")),  # Sort source files for reproducibility
+        sorted(glob("src/stable/src/*.c")),  # Sort source files for reproducibility
     ),
 ]
 
