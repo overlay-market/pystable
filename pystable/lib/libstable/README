@@ -1,0 +1,145 @@
+Libstable: Fast, Parallel and High-Precision Computation of alpha-Stable
+                 Distributions in C and MATLAB
+
+   Alpha-stable distributions are a family of well-known probability
+distributions. However, the lack of closed analytical expressions
+hinders their application. Currently, several tools have been developed
+to numerically evaluate their density and distribution functions or
+to estimate their parameters, but available solutions either do not
+reach sufficient precision on their evaluations or are excessively
+slow for practical purposes. Moreover, they do not take full advantage
+of the parallel processing capabilities of current multi-core machines.
+Other solutions work only on a subset of the $\alpha$-stable parameter
+space. We present a C/C++ library and a MATLAB front-end that permits
+fully parallelized, fast and high precision evaluation of density,
+distribution and quantile functions (PDF, CDF and CDF$^{-1}$ respectively),
+random variable generation and parameter estimation of $\alpha$-stable
+distributions in their whole parameter space. The library here described
+can be easily integrated on third party developments.
+
+Keywords: alpha-stable distributions, numerical calculation,
+          parallel processing
+
+Copyright (C) 2015. Javier Royuela del Val
+                    Federico Simmross Wattenberg
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License; version 3 of the
+license, as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; If not, see <http://www.gnu.org/licenses/>.
+
+ Javier Royuela del Val.
+ E.T.S.I. Telecomunicación
+ Universidad de Valladolid
+ Paseo de Belén 15, 47002 Valladolid, Spain.
+ jroyval@lpi.tel.uva.es    
+
+
+=======================[Usage of libstable]=======================
+
+Libstable has been developed at the Image Processing Laboratory (LPI)
+to give support for various research projects based on alpha-stable
+distributions, where it is used on a regular basis both in C/C++ and
+in MATLAB developments. It has been thoroughly tested on specific
+applications. Its source code and sample programs are publicly available
+at <http://www.lpi.tel.uva.es/stable> under the GPLv3 license.
+
+====================== Compiling the library =====================
+
+  Dependencies:
+ ----------------
+Libstable depends on several numerical methods provided by the GNU
+Scientific Library (GSL) [1], which must be installed in the system.
+It's available at
+
+        <http://www.gnu.org/gsl>
+
+Pthreads [2] has been used to implement parallelism. More information
+about this library can be found at
+
+        <https://computing.llnl.gov/tutorials/pthreads/>
+
+
+  Compilation:
+ ----------------
+Makefiles are provided so that the developed library can be easily
+compiled from the source code with the make command:
+
+        $ make
+
+After compilation, both shared libstable.so and static (libstable.a)
+versions of the library are produced. Several example programs to test
+the main functions of the library are also compiled against the static
+version of the library by default. They can be found under the tests
+folder.
+
+ ================== Usage in C/C++ environments  ==================
+
+If the libstable header files and compiled library are not located on the
+standard search path of the compiler and linker respectively, their location
+must be provided as command line flag to compile and link C developments.
+The program must also be linked to the GSL and system's math libraries.
+Typical command for compilation and static linking of a source file example.c
+with the GNU C compiler gcc is:
+
+    $ gcc -O3 -I/path/to/headers -c example.c
+    $ gcc example.o /path/to/libstable/libstable.a -lgsl -lgslcblas -lm
+
+When linking with the shared version of the library, the path to libstable.so
+must be provided to the system's dynamic linker, typically by defining the
+shell variable LD_LIBRARY_PATH. The path to the shared library must also
+be provided when linking the program:
+
+    $ gcc -L/path/to/libstable example.o -lgsl -lgslcblas -lm -lstable
+
+ ================== Usage in MATLAB environment  ==================
+
+MATLAB environment supports loading shared C libraries by means of the
+loadlibrary function. The shared version of the developed library (libstable.so)
+and the header file stable.h are required. In order to start using
+Libstable execute the following command in MATLAB environment:
+
+      >> loadlibrary('libstable','stable.h')
+
+Paths to libstable.so and stable.h must be in current folder or included
+in MATLAB search path.
+
+When the library is no longer needed, it can be unloaded by executing
+
+     >> unloadlibrary('libstable')
+
+Several MATLAB functions in the form of .m files are provided to access the
+capabilities of Libstable. These files can be easily modified by the user to
+adjust library parameters as needed.
+
+================== Usage in R environment  ==================
+
+An R front-end have been developed and can be found in the R folder. Once
+in the R session, the dynamic library and the front-end definitions can be
+loaded by typping
+
+	> dyn.load('/path/to/libstable.so')
+	> source('/path/to/libstable.R')
+
+Functions syntax is similar to the MATLAB interface. Additional information can
+be found in the documentation file provided.
+
+** Further documentation **
+
+Further documentation about the functions provided by Libstatble both in C/C++
+and MATLAB environments can be found in the documentation file provided
+within the library.
+
+   [1] GSL - GNU Scientific Library. On line: http://www.gnu.org/s/gsl.
+
+   [2] B. Barney, "POSIX Threads Programming Tutorial", On line:
+       https://computing.llnl.gov/tutorials/pthreads.
+
+

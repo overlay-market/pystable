@@ -1,0 +1,69 @@
+function pars = stable_fit_initC(data, parametrization)
+% pars = stable_fit_initC(data, parametrization)
+% McCulloch [1] alpha-stable parameters estimation.
+%    data: vector of random data
+%    pars: parameters of the alpha-estable distributions.
+%                 pars=[alpha,beta,sigma,mu];
+%
+% Copyright (C) 2013. Javier Royuela del Val
+%                     Federico Simmross Wattenberg
+%
+% [1] John H. McCulloch. Simple consistent estimators of stable distribution pa-
+%     rameters. Communications in Statistics – Simulation and Computation,
+%     15(4):1109–1136, 1986.
+
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; version 3 of the License.
+% 
+% This program is distributed in the hope that it will be useful, but
+% WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+% General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program; If not, see <http://www.gnu.org/licenses/>.
+%
+%
+%  Javier Royuela del Val.
+%  E.T.S.I. Telecomunicación
+%  Universidad de Valladolid
+%  Paseo de Belén 15, 47002 Valladolid, Spain.
+%  jroyval@lpi.tel.uva.es    
+%
+
+if nargin < 2
+    parametrization = 0;
+end
+
+
+if i(data) < 1
+    error('data is empty');
+end
+if (parametrization<0 || parametrization >1)
+    error('parametrization must be 0 or 1');
+end
+
+dist=calllib('libstable','stable_create',1,0,1,0,parametrization);
+calllib('libstable','stable_set_THREADS',0);
+calllib('libstable','stable_set_relTOL',1e-8);
+calllib('libstable','stable_set_absTOL',1e-8);
+
+n=length(data);
+pnu_c=0;
+pnu_z=0;
+
+calllib('libstable','stable_fit_init',dist,data,n,pnu_c,pnu_z);
+ 
+if parametrization == 0
+    mu = dist.Value.mu_0;
+elseif parametrization == 1
+    mu = dist.Value.mu_1;
+else
+    warning('Wrong parametrization used. Returning mu_0 by default');
+    mu = dist.Value.mu_0;
+end
+
+pars=[dist.Value.alpha dist.Value.beta dist.Value.sigma mu];
+
+calllib('libstable','stable_free',dist);
