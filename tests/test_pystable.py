@@ -7,20 +7,9 @@ import pystable
 
 
 @pytest.fixture
-def fit() -> tp.List[float]:
-    """
-    Fixture to get stable distribution example params
-    """
-    base = os.path.dirname(os.path.abspath(__file__))
-    base = os.path.join(base, 'helpers')
-    base = os.path.join(base, 'fit.csv')
-    return pd.read_csv(base).to_numpy().tolist()
-
-
-@pytest.fixture
 def data() -> tp.List[float]:
     """
-    Fixture to get dataset and associated fit
+    Fixture to get example dataset
     """
     base = os.path.dirname(os.path.abspath(__file__))
     base = os.path.join(base, 'helpers')
@@ -29,9 +18,21 @@ def data() -> tp.List[float]:
 
 
 @pytest.fixture
+def fit() -> tp.List[float]:
+    """
+    Fixture to get stable distribution example params.
+    Should fit the example dataset.
+    """
+    base = os.path.dirname(os.path.abspath(__file__))
+    base = os.path.join(base, 'helpers')
+    base = os.path.join(base, 'fit.csv')
+    return pd.read_csv(base).to_numpy().tolist()
+
+
+@pytest.fixture
 def cdfs() -> pd.DataFrame:
     """
-    Fixture to get dataset and associated fit
+    Fixture to get generated cdf values from example stable distribution
     """
     base = os.path.dirname(os.path.abspath(__file__))
     base = os.path.join(base, 'helpers')
@@ -42,7 +43,7 @@ def cdfs() -> pd.DataFrame:
 @pytest.fixture
 def pdfs() -> pd.DataFrame:
     """
-    Fixture to get dataset and associated fit
+    Fixture to get generated pdf values from example stable distribution
     """
     base = os.path.dirname(os.path.abspath(__file__))
     base = os.path.join(base, 'helpers')
@@ -53,7 +54,7 @@ def pdfs() -> pd.DataFrame:
 @pytest.fixture
 def quantiles() -> pd.DataFrame:
     """
-    Fixture to get dataset and associated fit
+    Fixture to get generated cdf^{-1} values from example stable distribution
     """
     base = os.path.dirname(os.path.abspath(__file__))
     base = os.path.join(base, 'helpers')
@@ -63,7 +64,7 @@ def quantiles() -> pd.DataFrame:
 
 def test_cdf(fit, cdfs):
     """
-    Tests cdf values for stable examples
+    Tests cdf values for stable example
     """
     expected = cdfs['value']
     xs = cdfs['x']
@@ -73,7 +74,7 @@ def test_cdf(fit, cdfs):
 
 def test_pdf(fit, pdfs):
     """
-    Tests pdf values for stable examples
+    Tests pdf values for stable example
     """
     expected = pdfs['value']
     xs = pdfs['x']
@@ -83,7 +84,7 @@ def test_pdf(fit, pdfs):
 
 def test_quantile(fit, quantiles):
     """
-    Tests quantile values for stable examples
+    Tests quantile values for stable example
     """
     expected = quantiles['value']
     qs = quantiles['q']
@@ -93,7 +94,7 @@ def test_quantile(fit, quantiles):
 
 def test_fit(fit, data):
     """
-    Tests stable param estimation for data
+    Tests stable param estimation for dataset
     """
     expected = fit
     actual = pystable.fit(data)
