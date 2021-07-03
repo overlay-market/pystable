@@ -68,7 +68,7 @@ def test_cdf(fit, cdfs):
     """
     expected = cdfs['value']
     xs = cdfs['x']
-    actual = np.vectorize(lambda x: pystable.cdf(x))(xs)
+    actual = np.vectorize(lambda x: pystable.cdf(x, *fit))(xs)
     assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
 
 
@@ -78,7 +78,7 @@ def test_pdf(fit, pdfs):
     """
     expected = pdfs['value']
     xs = pdfs['x']
-    actual = np.vectorize(lambda x: pystable.pdf(x))(xs)
+    actual = np.vectorize(lambda x: pystable.pdf(x, *fit))(xs)
     assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
 
 
@@ -88,7 +88,7 @@ def test_quantile(fit, quantiles):
     """
     expected = quantiles['value']
     qs = quantiles['q']
-    actual = np.vectorize(lambda x: pystable.q(x))(qs)
+    actual = np.vectorize(lambda x: pystable.q(x, *fit))(qs)
     assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
 
 
