@@ -1,7 +1,8 @@
 import os
 import pytest
 import pandas as pd
-# import numpy as np
+import numpy as np
+import pystable
 
 
 @pytest.fixture
@@ -57,4 +58,5 @@ def test_fit(dataset):
     Tests stable param estimation for data
     """
     data, fit = dataset
-    pass
+    params = pystable.fit(data)
+    assert np.testing.assert_allclose(fit, params, rtol=1e-08)
