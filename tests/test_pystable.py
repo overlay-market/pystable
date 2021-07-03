@@ -65,21 +65,30 @@ def test_cdf(fit, cdfs):
     """
     Tests cdf values for stable examples
     """
-    pass
+    expected = cdfs['value']
+    xs = cdfs['x']
+    actual = np.vectorize(lambda x: pystable.cdf(x))(xs)
+    assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
 
 
-def test_pdf():
+def test_pdf(fit, pdfs):
     """
     Tests pdf values for stable examples
     """
-    pass
+    expected = pdfs['value']
+    xs = pdfs['x']
+    actual = np.vectorize(lambda x: pystable.pdf(x))(xs)
+    assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
 
 
-def test_quantile():
+def test_quantile(fit, quantiles):
     """
     Tests quantile values for stable examples
     """
-    pass
+    expected = quantiles['value']
+    qs = quantiles['q']
+    actual = np.vectorize(lambda x: pystable.q(x))(qs)
+    assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
 
 
 def test_fit(fit, data):
