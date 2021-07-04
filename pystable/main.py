@@ -51,14 +51,23 @@ if __name__ == "__main__":
     s_cp = wrap_function(lib, 'stable_checkparams', s_cp_ret, s_cp_args)
     a = s_cp(1.0, 0.5, 1.5, 1.5, 5)
     print(a)
-    stable_pdf_args = [ctypes.POINTER(STABLE_DIST),
-                       ctypes.POINTER(ctypes.c_double),
-                       ctypes.c_uint,
-                       ctypes.POINTER(ctypes.c_double),
-                       ctypes.POINTER(ctypes.c_double)]
 
-    c_stable_pdf = wrap_function(lib, 'stable_pdf', None, stable_pdf_args)
 
-    dist = STABLE_DIST(1.0, 1.0, 0.5, 0.1, 0.3)
-    print(c_stable_pdf(ctypes.POINTER(dist), 1.0, 5, 1.0, 0.5))
+    c_stable_create_args = (ctypes.c_double,
+                            ctypes.c_double,
+                            ctypes.c_double,
+                            ctypes.c_double,
+                            ctypes.c_int)
 
+    c_stable_create_ret = ctypes.POINTER(STABLE_DIST)
+
+    c_stable_create = wrap_function(lib,
+                                    'stable_create',
+                                    c_stable_create_ret,
+                                    c_stable_create_args)
+
+    print(dir(c_stable_create))
+    print(c_stable_create)
+
+    dist = c_stable_create(2.0, 0.0, 1.0, 0.0, 0)
+    print(dir(dist))
