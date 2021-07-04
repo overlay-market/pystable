@@ -3,6 +3,13 @@ import os
 
 LIBSTABLE_PATH = 'libstable/stable/libs/libstable.so'
 
+class STABLE_DIST(ctypes.Structure):
+    _fields_ = [('alpha', ctypes.c_double),
+                ('beta', ctypes.c_double),
+                ('sigma', ctypes.c_double),
+                ('mu_0', ctypes.c_double),
+                ('mu_1', ctypes.c_double)]
+
 def libstable_path():
     '''Get path to libstable.so'''
     path = os.path.dirname(os.path.realpath(__file__))
@@ -44,3 +51,14 @@ if __name__ == "__main__":
     s_cp = wrap_function(lib, 'stable_checkparams', s_cp_ret, s_cp_args)
     a = s_cp(1.0, 0.5, 1.5, 1.5, 5)
     print(a)
+    stable_pdf_args = [ctypes.POINTER(STABLE_DIST),
+                       ctypes.POINTER(ctypes.c_double),
+                       ctypes.c_uint,
+                       ctypes.POINTER(ctypes.c_double),
+                       ctypes.POINTER(ctypes.c_double)]
+
+    c_stable_pdf = wrap_function(lib, 'stable_pdf', None, stable_pdf_args)
+
+    dist = STABLE_DIST(1.0, 1.0, 0.5, 0.1, 0.3)
+    print(c_stable_pdf(ctypes.POINTER(dist), 1.0, 5, 1.0, 0.5))
+
