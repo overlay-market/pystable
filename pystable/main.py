@@ -1,7 +1,16 @@
+import pandas as pd
 from ctypes import *
 import os
 
 LIBSTABLE_PATH = 'libstable/stable/libs/libstable.so'
+
+def read_helpers(file_name):
+    path = os.path.dirname(os.path.realpath(__file__))
+    path = os.path.abspath(os.path.join(path, os.pardir))
+    path = os.path.abspath(os.path.join(path, 'tests/helpers'))
+    path = os.path.abspath(os.path.join(path, file_name))
+
+    return pd.read_csv(path)
 
 def libstable_path():
     '''Get path to libstable.so'''
@@ -33,11 +42,26 @@ def wrap_function(lib, funcname, restype, argtypes):
     func.argtypes = argtypes
     return func
 
+def stable_checkparams(lib, params):
+    # RR TODO
+    # Test `stable_checkparams` in stable_dist.c
+    s_cp_args = (c_double,
+                 c_double,
+                 c_double,
+                 c_double,
+                 c_int)
+    s_cp_ret = c_int
+
+    s_cp = wrap_function(lib, 'stable_checkparams', s_cp_ret, s_cp_args)
+    a = s_cp(1.0, 0.5, 1.5, 1.5, 5)
+    #  print(a)
+
 def stable_create(lib, params):
     dist = c_stable_create(lib, params).contents
     return {
               'alpha': dist.alpha,
               'beta': dist.beta,
+              'sigma': dist.sigma,
               'mu_0': dist.mu_0,
               'mu_1': dist.mu_1,
             }
@@ -69,6 +93,22 @@ def c_stable_create(lib, params):
     return c_fn(params['alpha'], params['beta'], params['sigma'],
                            params['mu'], params['parameterization'])
 
+def c_stable_cdf(lib, params):
+    stable_dist_pointer = POINTER(STABLE_DIST)
+    args = (stable_dist_pointer, POINTER(c_double), c_uint,
+            POINTER(c_double), POINTER(c_double))
+    ret = c_void_p
+    c_fn = wrap_function(lib, 'stable_cdf', ret, args)
+
+    array_type = c_double * params['Nx']
+    LP_c_double = POINTER(c_double)
+    dist = params['dist']
+    print(type(dist))
+    #  c_fn(stable_dist_pointer.from_address(addressof(dist)), array_type(*params['x']), params['Nx'], array_type(*params['cdf']), LP_c_double())
+    c_fn(dist, array_type(*params['x']), params['Nx'], array_type(*params['cdf']), LP_c_double())
+
+    return dist
+
 
 if __name__ == "__main__":
     path = libstable_path()
@@ -83,17 +123,6 @@ if __name__ == "__main__":
     print(int(result))
     print()
 
-    # Test `stable_checkparams` in stable_dist.c
-    s_cp_args = (c_double,
-                 c_double,
-                 c_double,
-                 c_double,
-                 c_int)
-    s_cp_ret = c_int
-
-    s_cp = wrap_function(lib, 'stable_checkparams', s_cp_ret, s_cp_args)
-    a = s_cp(1.0, 0.5, 1.5, 1.5, 5)
-    #  print(a)
 
     # `create_stable` input args to create pointer to `StableDist` struct
     dist_params = {
@@ -103,5 +132,40 @@ if __name__ == "__main__":
             'sigma': 0.0006409442772706084, # scale
             'parameterization': 1,
         }
-    dist = stable_create(lib, dist_params)
-    print(dist)
+
+    dist = c_stable_create(lib, dist_params)
+    dist_params = stable_create(lib, dist_params)
+
+    df_params = read_helpers('cdfs.csv')
+    x = []
+    for i in df_params['x']:
+        x.append(i)
+    Nx = len(x)
+    cdf = [0] * Nx
+    err = 0.0
+    cdf_params = {
+            'dist': dist,
+            'x': x,
+            'Nx': Nx,
+            'cdf': cdf,
+            'err': err,
+        }
+
+    print('BEFORE `stable_cdf` call')
+    print(dist.contents.alpha)
+    print(dist.contents.beta)
+    print(dist.contents.sigma)
+    print(dist.contents.mu_0)
+    print(dist.contents.mu_1)
+    print()
+    dist = c_stable_cdf(lib, cdf_params)
+
+    print('AFTER `stable_cdf` call')
+    print(dist.contents.alpha)
+    print(dist.contents.beta)
+    print(dist.contents.sigma)
+    print(dist.contents.mu_0)
+    print(dist.contents.mu_1)
+    print()
+
+    print('DIST IS UNCHANGED')

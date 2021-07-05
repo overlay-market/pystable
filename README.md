@@ -28,3 +28,10 @@ $ make
 ```
 
 
+## TODO
+- [ ] typings
+- [ ] tests
+- [ ] handle errors
+  - [ ] handle NULL pointer errors
+  - [ ] handle `err` 
+- [ ] create lib structure
