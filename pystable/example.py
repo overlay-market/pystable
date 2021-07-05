@@ -4,7 +4,6 @@ import utils
 
 def run():
     lib = pystable.load_libstable()
-    # `create_stable` input args to create pointer to `StableDist` struct
     dist_params = {
             'alpha': 1.3278285879842862,
             'beta': 0.0816835526225623,
@@ -12,21 +11,28 @@ def run():
             'sigma': 0.0006409442772706084,  # scale
             'parameterization': 1,
         }
+    # Check `dist_params` validity
+    check = pystable.stable_checkparams(lib, dist_params)
+    print('stable_checkparams (0 means OK): ', check)
+    print()
 
+    # Call `create_stable` input args to create pointer to `StableDist` struct
     dist = pystable.stable_create(lib, dist_params)
-    dist_params = {
+    dist_result = {
               'alpha': dist.contents.alpha,
               'beta': dist.contents.beta,
               'sigma': dist.contents.sigma,
               'mu_0': dist.contents.mu_0,
               'mu_1': dist.contents.mu_1,
             }
-    print(dist_params)
+    print('stable_create dist result: ', dist_result)
+    print()
 
     # `stable_cdf_point`
     stable_cdf_point_params = {'dist': dist, 'x': -0.009700000000000002}
     ret = pystable.stable_cdf_point(lib, stable_cdf_point_params)
-    print(ret)
+    print('stable_cdf_point result: ', ret)
+    print()
 
     df_params = utils.read_helpers('cdfs.csv')
     x = []
@@ -43,10 +49,7 @@ def run():
 
     # `stable_cdf`
     cdf = pystable.stable_cdf(lib, cdf_params)
-    print(cdf)
-    print(len(cdf))
-
-    pystable.stable_checkparams(lib, 0)
+    print('stable_cdf result: ', cdf)
 
 
 if __name__ == "__main__":

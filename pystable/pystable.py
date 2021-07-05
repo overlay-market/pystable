@@ -31,15 +31,6 @@ def wrap_function(lib, funcname, restype, argtypes):
     func.argtypes = argtypes
     return func
 
-
-def stable_checkparams(lib, params):
-    args = (ct.c_double, ct.c_double, ct.c_double, ct.c_double, ct.c_int)
-    ret = ct.c_int
-    c_fn = wrap_function(lib, 'stable_checkparams', ret, args)
-    a = c_fn(1.0, 0.5, 1.5, 1.5, 5)
-    print(a)
-
-
 def stable_create(lib, params):
     c_fn = c_stable_create(lib, params)
     return c_fn(params['alpha'], params['beta'], params['sigma'], params['mu'],
@@ -70,6 +61,17 @@ def c_stable_create(lib, params):
     ret = ct.POINTER(STABLE_DIST)
     return wrap_function(lib, 'stable_create', ret, args)
 
+
+def stable_checkparams(lib, params):
+    c_fn = c_stable_checkparams(lib)
+    return c_fn(params['alpha'], params['beta'], params['sigma'], params['mu'],
+                params['parameterization'])
+    #  return c_fn(1.0, 0.5, 1.5, 1.5, 5)
+
+def c_stable_checkparams(lib):
+    args = (ct.c_double, ct.c_double, ct.c_double, ct.c_double, ct.c_int)
+    ret = ct.c_int
+    return wrap_function(lib, 'stable_checkparams', ret, args)
 
 def stable_cdf(lib, params):
     c_fn = c_stable_cdf(lib, params)
