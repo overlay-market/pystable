@@ -1,8 +1,17 @@
+import os
+import pandas as pd
 import pystable
 import utils
 
+def read_helpers(file_name: str):
+    path = os.path.dirname(os.path.realpath(__file__))
+    path = os.path.abspath(os.path.join(path, os.pardir))
+    path = os.path.abspath(os.path.join(path, 'tests/helpers'))
+    path = os.path.abspath(os.path.join(path, file_name))
 
-def run():
+    return pd.read_csv(path)
+
+def run() -> None:
     lib = pystable.load_libstable()
     dist_params = {
             'alpha': 1.3278285879842862,
@@ -18,6 +27,7 @@ def run():
 
     # Call `create_stable` input args to create pointer to `StableDist` struct
     dist = pystable.stable_create(lib, dist_params)
+    print('DIST', type(dist))
     dist_result = {
               'alpha': dist.contents.alpha,
               'beta': dist.contents.beta,
@@ -34,7 +44,7 @@ def run():
     print('stable_cdf_point result: ', ret)
     print()
 
-    df_params = utils.read_helpers('cdfs.csv')
+    df_params = read_helpers('cdfs.csv')
     x = []
     for i in df_params['x']:
         x.append(i)
