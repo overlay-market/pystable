@@ -9,14 +9,17 @@ def libstable_path():
     path = os.path.abspath(os.path.join(path, os.pardir))
     return os.path.abspath(os.path.join(path, LIBSTABLE_PATH))
 
-#  /* Parameters:
-#  0-parametrization describen in Nolan, 1997 is employed by default
-#      alpha : stability index
-#      beta : skewness parameter
-#      scale: scale parameter
-#      mu_0 : 0-parametrization location parameter
-#      mu_1 : correspondig 1-parametrization location parameter    */
 class STABLE_DIST(Structure):
+    '''
+    Stable distribution structure.
+
+    Parameters:
+      alpha [c_double]:  Stability index
+      beta  [c_double]:  Skewness parameter
+      scale [c_double]:  Scale parameter
+      mu_0  [c_double]:  0-parametrization local parameter
+      mu_1  [c_double]:  corresponding 1-parametrization local parameter
+    '''
     _fields_ = [('alpha', c_double),
                 ('beta', c_double),
                 ('sigma', c_double),
@@ -31,30 +34,45 @@ def wrap_function(lib, funcname, restype, argtypes):
     return func
 
 def stable_create(lib, params):
-    '''Create `StableDist` struct by calling `stable_create`'''
-    c_stable_create_args = (c_double,
-                            c_double,
-                            c_double,
-                            c_double,
-                            c_int)
+    dist = c_stable_create(lib, params).contents
+    return {
+              'alpha': dist.alpha,
+              'beta': dist.beta,
+              'mu_0': dist.mu_0,
+              'mu_1': dist.mu_1,
+            }
 
-    c_stable_create_ret = POINTER(STABLE_DIST)
+def c_stable_create(lib, params):
+    '''
+    Call `stable_create` function to create a `StableDist` struct.
 
-    c_stable_create = wrap_function(lib,
-                                    'stable_create',
-                                    c_stable_create_ret,
-                                    c_stable_create_args)
+    Inputs:
+      lib    [CDLL]:  libstable dynamically linked library
+      params [Dict]:  `stable_create` input arguments
+        alpha            [double]:
+        beta             [double]:
+        mu               [double]:
+        sigma            [double]:
+        parameterization [int]:
 
-    return c_stable_create(params['alpha'], params['beta'], params['sigma'], params['mu'], params['parameterization'])
+    Outputs:
+        [Stable_DIST object]: contains resulting `StableDist` struct parameters
+          alpha [double]:
+          beta  [double]:
+          mu_0  [double]:
+          mu_1  [double]:
+    '''
+    args = (c_double, c_double, c_double, c_double, c_int)
+    ret = POINTER(STABLE_DIST)
+    c_fn = wrap_function(lib, 'stable_create', ret, args)
+
+    return c_fn(params['alpha'], params['beta'], params['sigma'],
+                           params['mu'], params['parameterization'])
 
 
 if __name__ == "__main__":
     path = libstable_path()
     lib = cdll.LoadLibrary(path)
-
-    # Test a C call
-    pf = lib.printf
-    pf(b'hi, %s\n', b'world')
 
     # Test example C `our_function` call
     pys_our_fn = lib.our_function.argtypes = (c_int, POINTER(c_int))
@@ -85,11 +103,5 @@ if __name__ == "__main__":
             'sigma': 0.0006409442772706084, # scale
             'parameterization': 1,
         }
-
     dist = stable_create(lib, dist_params)
-    print('StableDist struct result:')
-    print(dist.contents)
-    print('\talpha: ', dist.contents.alpha)
-    print('\tbeta: ', dist.contents.beta)
-    print('\tmu_0: ', dist.contents.mu_0)
-    print('\tmu_1: ', dist.contents.mu_1)
+    print(dist)
