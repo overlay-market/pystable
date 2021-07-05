@@ -95,19 +95,29 @@ def c_stable_create(lib, params):
 
 def c_stable_cdf(lib, params):
     stable_dist_pointer = POINTER(STABLE_DIST)
+    array_type = c_double * params['Nx']
     args = (stable_dist_pointer, POINTER(c_double), c_uint,
-            POINTER(c_double), POINTER(c_double))
+            POINTER(array_type), POINTER(c_double))
     ret = c_void_p
     c_fn = wrap_function(lib, 'stable_cdf', ret, args)
 
-    array_type = c_double * params['Nx']
     LP_c_double = POINTER(c_double)
     dist = params['dist']
+    cdf = array_type(*params['cdf'])
     print(type(dist))
     #  c_fn(stable_dist_pointer.from_address(addressof(dist)), array_type(*params['x']), params['Nx'], array_type(*params['cdf']), LP_c_double())
-    c_fn(dist, array_type(*params['x']), params['Nx'], array_type(*params['cdf']), LP_c_double())
+    ret = c_fn(dist, array_type(*params['x']), params['Nx'], byref(cdf), LP_c_double())
+    print(cdf)
+    print(dir(cdf))
+    #  print(ret)
 
     return dist
+
+def c_stable_cdf_point(lib, params):
+    args = (POINTER(STABLE_DIST), c_double, POINTER(c_double))
+    ret = c_double
+    c_fn = wrap_function(lib, 'stable_cdf_point', ret, args)
+    return c_fn
 
 
 if __name__ == "__main__":
@@ -135,37 +145,33 @@ if __name__ == "__main__":
 
     dist = c_stable_create(lib, dist_params)
     dist_params = stable_create(lib, dist_params)
+    
+    # No matter what i set for x, 0.9999845901899308 is always returned from `stable_cdf_point`
+    stable_cdf_point_params = {
+              'dist': dist, 
+              'x': 1.0,
+            }
+    stable_cdf_point_fn = c_stable_cdf_point(lib, stable_cdf_point_params)
+    LP_c_double = POINTER(c_double)
+    ret = stable_cdf_point_fn(dist, 1.0, LP_c_double())
+    print(ret)
+    print('done')
 
-    df_params = read_helpers('cdfs.csv')
-    x = []
-    for i in df_params['x']:
-        x.append(i)
-    Nx = len(x)
-    cdf = [0] * Nx
-    err = 0.0
-    cdf_params = {
-            'dist': dist,
-            'x': x,
-            'Nx': Nx,
-            'cdf': cdf,
-            'err': err,
-        }
 
-    print('BEFORE `stable_cdf` call')
-    print(dist.contents.alpha)
-    print(dist.contents.beta)
-    print(dist.contents.sigma)
-    print(dist.contents.mu_0)
-    print(dist.contents.mu_1)
-    print()
-    dist = c_stable_cdf(lib, cdf_params)
-
-    print('AFTER `stable_cdf` call')
-    print(dist.contents.alpha)
-    print(dist.contents.beta)
-    print(dist.contents.sigma)
-    print(dist.contents.mu_0)
-    print(dist.contents.mu_1)
-    print()
-
-    print('DIST IS UNCHANGED')
+    #
+    #  df_params = read_helpers('cdfs.csv')
+    #  x = []
+    #  for i in df_params['x']:
+    #      x.append(i)
+    #  Nx = len(x)
+    #  cdf = [0] * Nx
+    #  err = 0.0
+    #  cdf_params = {
+    #          'dist': dist,
+    #          'x': x,
+    #          'Nx': Nx,
+    #          'cdf': cdf,
+    #          'err': err,
+    #      }
+    #
+    #  dist = c_stable_cdf(lib, cdf_params)
