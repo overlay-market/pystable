@@ -1,39 +1,28 @@
-import pandas as pd
-from ctypes import *
-import os
+import utils
+import ctypes as ct
 
-LIBSTABLE_PATH = 'libstable/stable/libs/libstable.so'
 
-def read_helpers(file_name):
-    path = os.path.dirname(os.path.realpath(__file__))
-    path = os.path.abspath(os.path.join(path, os.pardir))
-    path = os.path.abspath(os.path.join(path, 'tests/helpers'))
-    path = os.path.abspath(os.path.join(path, file_name))
+def load_libstable():
+    return ct.cdll.LoadLibrary(utils.libstable_path())
 
-    return pd.read_csv(path)
 
-def libstable_path():
-    '''Get path to libstable.so'''
-    path = os.path.dirname(os.path.realpath(__file__))
-    path = os.path.abspath(os.path.join(path, os.pardir))
-    return os.path.abspath(os.path.join(path, LIBSTABLE_PATH))
-
-class STABLE_DIST(Structure):
+class STABLE_DIST(ct.Structure):
     '''
     Stable distribution structure.
 
     Parameters:
-      alpha [c_double]:  Stability index
-      beta  [c_double]:  Skewness parameter
-      scale [c_double]:  Scale parameter
-      mu_0  [c_double]:  0-parametrization local parameter
-      mu_1  [c_double]:  corresponding 1-parametrization local parameter
+      alpha [ct.c_double]:  Stability index
+      beta  [ct.c_double]:  Skewness parameter
+      scale [ct.c_double]:  Scale parameter
+      mu_0  [ct.c_double]:  0-parametrization local parameter
+      mu_1  [ct.c_double]:  corresponding 1-parametrization local parameter
     '''
-    _fields_ = [('alpha', c_double),
-                ('beta', c_double),
-                ('sigma', c_double),
-                ('mu_0', c_double),
-                ('mu_1', c_double)]
+    _fields_ = [('alpha', ct.c_double),
+                ('beta', ct.c_double),
+                ('sigma', ct.c_double),
+                ('mu_0', ct.c_double),
+                ('mu_1', ct.c_double)]
+
 
 def wrap_function(lib, funcname, restype, argtypes):
     '''Wrap ctypes functions'''
@@ -42,29 +31,20 @@ def wrap_function(lib, funcname, restype, argtypes):
     func.argtypes = argtypes
     return func
 
-def stable_checkparams(lib, params):
-    # RR TODO
-    # Test `stable_checkparams` in stable_dist.c
-    s_cp_args = (c_double,
-                 c_double,
-                 c_double,
-                 c_double,
-                 c_int)
-    s_cp_ret = c_int
 
-    s_cp = wrap_function(lib, 'stable_checkparams', s_cp_ret, s_cp_args)
-    a = s_cp(1.0, 0.5, 1.5, 1.5, 5)
-    #  print(a)
+def stable_checkparams(lib, params):
+    args = (ct.c_double, ct.c_double, ct.c_double, ct.c_double, ct.c_int)
+    ret = ct.c_int
+    c_fn = wrap_function(lib, 'stable_checkparams', ret, args)
+    a = c_fn(1.0, 0.5, 1.5, 1.5, 5)
+    print(a)
+
 
 def stable_create(lib, params):
-    dist = c_stable_create(lib, params).contents
-    return {
-              'alpha': dist.alpha,
-              'beta': dist.beta,
-              'sigma': dist.sigma,
-              'mu_0': dist.mu_0,
-              'mu_1': dist.mu_1,
-            }
+    c_fn = c_stable_create(lib, params)
+    return c_fn(params['alpha'], params['beta'], params['sigma'], params['mu'],
+                params['parameterization'])
+
 
 def c_stable_create(lib, params):
     '''
@@ -86,77 +66,37 @@ def c_stable_create(lib, params):
           mu_0  [double]:
           mu_1  [double]:
     '''
-    args = (c_double, c_double, c_double, c_double, c_int)
-    ret = POINTER(STABLE_DIST)
-    c_fn = wrap_function(lib, 'stable_create', ret, args)
+    args = (ct.c_double, ct.c_double, ct.c_double, ct.c_double, ct.c_int)
+    ret = ct.POINTER(STABLE_DIST)
+    return wrap_function(lib, 'stable_create', ret, args)
 
-    return c_fn(params['alpha'], params['beta'], params['sigma'],
-                           params['mu'], params['parameterization'])
 
 def stable_cdf(lib, params):
     c_fn = c_stable_cdf(lib, params)
-    array_type = c_double * params['Nx']
-    LP_c_double = POINTER(c_double)
-    cdf = (c_double * params['Nx'])()
+    array_type = ct.c_double * params['Nx']
+    LP_c_double = ct.POINTER(ct.c_double)
+    cdf = (ct.c_double * params['Nx'])()
 
     c_fn(params['dist'], array_type(*params['x']), params['Nx'], cdf,
-               LP_c_double())
+         LP_c_double())
 
     return list(cdf)
 
+
 def c_stable_cdf(lib, params):
-    array_type = c_double * params['Nx']
-    args = (POINTER(STABLE_DIST), POINTER(c_double), c_uint,
-            POINTER(c_double), POINTER(c_double))
-    ret = c_void_p
+    args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint,
+            ct.POINTER(ct.c_double), ct.POINTER(ct.c_double))
+    ret = ct.c_void_p
     return wrap_function(lib, 'stable_cdf', ret, args)
+
 
 def stable_cdf_point(lib, params):
     c_fn = c_stable_cdf_point(lib, params)
-    LP_c_double = POINTER(c_double)
+    LP_c_double = ct.POINTER(ct.c_double)
     return c_fn(params['dist'], params['x'], LP_c_double())
 
+
 def c_stable_cdf_point(lib, params):
-    args = (POINTER(STABLE_DIST), c_double, POINTER(c_double))
-    ret = c_double
+    args = (ct.POINTER(STABLE_DIST), ct.c_double, ct.POINTER(ct.c_double))
+    ret = ct.c_double
     return wrap_function(lib, 'stable_cdf_point', ret, args)
-
-if __name__ == "__main__":
-    path = libstable_path()
-    lib = cdll.LoadLibrary(path)
-
-    # `create_stable` input args to create pointer to `StableDist` struct
-    dist_params = {
-            'alpha': 1.3278285879842862,
-            'beta': 0.0816835526225623,
-            'mu': -0.0000252748167384907, # loc
-            'sigma': 0.0006409442772706084, # scale
-            'parameterization': 1,
-        }
-
-    dist = c_stable_create(lib, dist_params)
-    dist_params = stable_create(lib, dist_params)
-    
-    stable_cdf_point_params = {
-              'dist': dist, 
-              'x': -0.009700000000000002,
-            }
-    ret = stable_cdf_point(lib, stable_cdf_point_params)
-    print(ret)
-
-    df_params = read_helpers('cdfs.csv')
-    x = []
-    for i in df_params['x']:
-        x.append(i)
-    Nx = len(x)
-    cdf = [0] * Nx
-    cdf_params = {
-            'dist': dist,
-            'x': x,
-            'Nx': Nx,
-            'cdf': cdf,
-        }
-
-    cdf = stable_cdf(lib, cdf_params)
-    print(cdf)
-    print(len(cdf))

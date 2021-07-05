@@ -35,3 +35,5 @@ $ make
   - [ ] handle NULL pointer errors
   - [ ] handle `err` 
 - [ ] create lib structure
+- [x] create example file utilizing pystable lib
+- [x] `import ctypes as ct`
