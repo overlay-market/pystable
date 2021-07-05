@@ -1,11 +1,7 @@
-import pandas as pd
 from ctypes import *
 import os
 
 LIBSTABLE_PATH = 'libstable/stable/libs/libstable.so'
-
-def read_helpers(file_name):
-    df = pd.read_csv(path)
 
 def libstable_path():
     '''Get path to libstable.so'''
@@ -49,7 +45,7 @@ def stable_create(lib, params):
                                     c_stable_create_ret,
                                     c_stable_create_args)
 
-    return c_stable_create(params['alpha'], params['beta'], params['mu'], params['sigma'], params['parameterization'])
+    return c_stable_create(params['alpha'], params['beta'], params['sigma'], params['mu'], params['parameterization'])
 
 
 if __name__ == "__main__":
@@ -81,52 +77,19 @@ if __name__ == "__main__":
     a = s_cp(1.0, 0.5, 1.5, 1.5, 5)
     #  print(a)
 
-    # Working `stable_create` with dummy variables
-    dist_params_dummy = {
-            'alpha': 2.0,
-            'beta': 0.0,
-            'mu': 1.0, # loc
-            'sigma': 0.0, # scale
-            'parameterization': 0,
-        }
-
-    dist_working = stable_create(lib, dist_params_dummy)
-    print('Dummy params working:')
-    print(dist_working.contents)
-    print('\talpha: ', dist_working.contents.alpha)
-    print('\tbeta: ', dist_working.contents.beta)
-    print('\tmu_0: ', dist_working.contents.mu_0)
-    print('\tmu_1: ', dist_working.contents.mu_1)
-
-
-    # Not working `stable_create` with variables from https://github.com/overlay-market/pystable/blob/tests/tests/helpers/fit.csv
-    #  dist_params = {
-    #          'alpha': 1.3278285879842862,
-    #          'beta': 0.0816835526225623,
-    #          'mu': -0.0000252748167384907, # loc
-    #          'sigma': 0.0006409442772706084, # scale
-    #          'parameterization': 1,
-    #      }
+    # `create_stable` input args to create pointer to `StableDist` struct
     dist_params = {
-            'alpha': 1.3,
-            'beta': 0.0,
-            'mu': 0.0, # loc
-            'sigma': 1.0, # scale
+            'alpha': 1.3278285879842862,
+            'beta': 0.0816835526225623,
+            'mu': -0.0000252748167384907, # loc
+            'sigma': 0.0006409442772706084, # scale
             'parameterization': 1,
         }
 
-    dist_not_working = stable_create(lib, dist_params)
-    print(dist_not_working.contents)    # NULL pointer access error
-    #  print(dist_not_working.contents.alpha)
-
-
-
-    #  c_stable_cdf_args = ((POINTER(STABLE_DIST)), c_double, c_uint, c_double, c_double)
-    #  c_stable_cdf_ret = None
-    #  c_stable_cdf = wrap_function(lib, 'stable_cdf', None, c_stable_cdf_args)
-
-    #  x =
-    #  c_stable_cdf(POINTER(dist), x,
-
-    #  #  print(c_stable_cdf_ret.restype)
-
+    dist = stable_create(lib, dist_params)
+    print('StableDist struct result:')
+    print(dist.contents)
+    print('\talpha: ', dist.contents.alpha)
+    print('\tbeta: ', dist.contents.beta)
+    print('\tmu_0: ', dist.contents.mu_0)
+    print('\tmu_1: ', dist.contents.mu_1)
