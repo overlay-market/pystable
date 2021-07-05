@@ -1,10 +1,11 @@
+import pandas as pd
 from ctypes import *
 import os
 
 LIBSTABLE_PATH = 'libstable/stable/libs/libstable.so'
 
-#  def read_helpers(file_name):
-#      df = pd.read_csv(path)
+def read_helpers(file_name):
+    df = pd.read_csv(path)
 
 def libstable_path():
     '''Get path to libstable.so'''
@@ -99,15 +100,33 @@ if __name__ == "__main__":
 
 
     # Not working `stable_create` with variables from https://github.com/overlay-market/pystable/blob/tests/tests/helpers/fit.csv
+    #  dist_params = {
+    #          'alpha': 1.3278285879842862,
+    #          'beta': 0.0816835526225623,
+    #          'mu': -0.0000252748167384907, # loc
+    #          'sigma': 0.0006409442772706084, # scale
+    #          'parameterization': 1,
+    #      }
     dist_params = {
-            'alpha': 1.3278285879842862,
-            'beta': 0.0816835526225623,
-            'mu': -0.0000252748167384907, # loc
-            'sigma': 0.0006409442772706084, # scale
+            'alpha': 1.3,
+            'beta': 0.0,
+            'mu': 0.0, # loc
+            'sigma': 1.0, # scale
             'parameterization': 1,
         }
 
     dist_not_working = stable_create(lib, dist_params)
     print(dist_not_working.contents)    # NULL pointer access error
     #  print(dist_not_working.contents.alpha)
+
+
+
+    #  c_stable_cdf_args = ((POINTER(STABLE_DIST)), c_double, c_uint, c_double, c_double)
+    #  c_stable_cdf_ret = None
+    #  c_stable_cdf = wrap_function(lib, 'stable_cdf', None, c_stable_cdf_args)
+
+    #  x =
+    #  c_stable_cdf(POINTER(dist), x,
+
+    #  #  print(c_stable_cdf_ret.restype)
 
