@@ -113,6 +113,11 @@ def c_stable_cdf(lib, params):
 
     return dist
 
+def stable_cdf_point(lib, params):
+    c_fn = c_stable_cdf_point(lib, params)
+    LP_c_double = POINTER(c_double)
+    return c_fn(params['dist'], params['x'], LP_c_double())
+
 def c_stable_cdf_point(lib, params):
     args = (POINTER(STABLE_DIST), c_double, POINTER(c_double))
     ret = c_double
@@ -146,14 +151,11 @@ if __name__ == "__main__":
     dist = c_stable_create(lib, dist_params)
     dist_params = stable_create(lib, dist_params)
     
-    # No matter what i set for x, 0.9999845901899308 is always returned from `stable_cdf_point`
     stable_cdf_point_params = {
               'dist': dist, 
-              'x': 1.0,
+              'x': -0.009700000000000002,
             }
-    stable_cdf_point_fn = c_stable_cdf_point(lib, stable_cdf_point_params)
-    LP_c_double = POINTER(c_double)
-    ret = stable_cdf_point_fn(dist, 1.0, LP_c_double())
+    ret = stable_cdf_point(lib, stable_cdf_point_params)
     print(ret)
     print('done')
 
