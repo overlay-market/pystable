@@ -448,5 +448,4 @@ void stable_rnd(StableDist *dist, double* rnd, unsigned int n);
 double stable_rnd_point(StableDist *dist);
 
 void stable_rnd_seed(StableDist * dist, unsigned long int s);
-int our_function(int num_numbers, int *numbers);
 #endif //stable_H

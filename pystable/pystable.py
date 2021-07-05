@@ -125,16 +125,6 @@ if __name__ == "__main__":
     path = libstable_path()
     lib = cdll.LoadLibrary(path)
 
-    # Test example C `our_function` call
-    pys_our_fn = lib.our_function.argtypes = (c_int, POINTER(c_int))
-    numbers = [1, 2, -3, 4, -5, 6]
-    num_numbers = len(numbers)
-    array_type = c_int * num_numbers
-    result = lib.our_function(c_int(num_numbers), array_type(*numbers))
-    print(int(result))
-    print()
-
-
     # `create_stable` input args to create pointer to `StableDist` struct
     dist_params = {
             'alpha': 1.3278285879842862,
