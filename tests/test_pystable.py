@@ -1,9 +1,23 @@
 import os
 import pytest
+import ctypes as ct
 import typing as tp
 import pandas as pd
 import numpy as np
-import pystable
+
+from pystable import pystable
+
+
+def create_stable(clib: ct.CDLL, params: tp.Dict[str, float]):
+    return pystable.stable_create(clib, params)
+
+
+@pytest.fixture
+def lib() -> ct.CDLL:
+    """
+    Fixture to get C library
+    """
+    return pystable.load_libstable()
 
 
 @pytest.fixture
@@ -18,7 +32,7 @@ def data() -> tp.List[float]:
 
 
 @pytest.fixture
-def fit() -> tp.List[float]:
+def fit() -> tp.Dict[str, float]:
     """
     Fixture to get stable distribution example params.
     Should fit the example dataset.
@@ -26,7 +40,7 @@ def fit() -> tp.List[float]:
     base = os.path.dirname(os.path.abspath(__file__))
     base = os.path.join(base, 'helpers')
     base = os.path.join(base, 'fit.csv')
-    return pd.read_csv(base).to_numpy().tolist()
+    return pd.read_csv(base).to_dict(orient='records')[0]
 
 
 @pytest.fixture
@@ -62,6 +76,69 @@ def quantiles() -> pd.DataFrame:
     return pd.read_csv(base)
 
 
+# Low level wrapper tests
+
+def test_stable_create(lib, fit):
+    """
+    Tests creation of stable distribution
+    """
+    dist = create_stable(lib, fit)
+    # TODO: assert type(dist) == pystable.STABLE_DIST ... diff bw <class 'pystable.pystable.LP_STABLE_DIST'> == <class 'pystable.pystable.STABLE_DIST'>?
+
+    assert fit['alpha'] == dist.contents.alpha
+    assert fit['beta'] == dist.contents.beta
+    assert fit['sigma'] == dist.contents.sigma
+
+    if fit['parameterization'] == 1:
+        assert fit['mu'] == dist.contents.mu_1
+    else:
+        assert fit['mu'] == dist.contents.mu_0
+
+
+def test_stable_cdf(lib, fit, cdfs):
+    """
+    Tests cdf values for stable example
+    """
+    expected = cdfs['value'].tolist()
+
+    dist = create_stable(lib, fit)
+    x = cdfs['x'].to_numpy().tolist()
+    Nx = len(x)
+    cdf = [0] * Nx
+    cdf_params = {
+        'dist': dist,
+        'x': x,
+        'Nx': Nx,
+        'cdf': cdf
+    }
+
+    actual = pystable.stable_cdf(lib, cdf_params)
+    np.testing.assert_allclose(expected, actual, rtol=1e-08)
+
+
+def test_stable_pdf(lib, fit, pdfs):
+    """
+    Tests cdf values for stable example
+    """
+    expected = pdfs['value'].tolist()
+
+    dist = create_stable(lib, fit)
+    x = pdfs['x'].to_numpy().tolist()
+    Nx = len(x)
+    pdf = [0] * Nx
+    pdf_params = {
+        'dist': dist,
+        'x': x,
+        'Nx': Nx,
+        'pdf': pdf
+    }
+
+    actual = pystable.stable_pdf(lib, pdf_params)
+    np.testing.assert_allclose(expected, actual, rtol=1e-08)
+
+
+# Public API tests
+
 def test_cdf(fit, cdfs):
     """
     Tests cdf values for stable example
@@ -69,7 +146,7 @@ def test_cdf(fit, cdfs):
     expected = cdfs['value'].tolist()
     x = cdfs['x'].to_numpy().tolist()
     actual = pystable.cdf(x, *fit)
-    assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
+    np.testing.assert_allclose(expected, actual, rtol=1e-08)
 
 
 def test_pdf(fit, pdfs):
@@ -79,7 +156,7 @@ def test_pdf(fit, pdfs):
     expected = pdfs['value'].tolist()
     x = pdfs['x'].to_numpy().tolist()
     actual = pystable.pdf(x, *fit)
-    assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
+    np.testing.assert_allclose(expected, actual, rtol=1e-08)
 
 
 def test_quantile(fit, quantiles):
@@ -89,7 +166,7 @@ def test_quantile(fit, quantiles):
     expected = quantiles['value'].tolist()
     q = quantiles['q'].to_numpy().tolist()
     actual = pystable.q(q, *fit)
-    assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
+    np.testing.assert_allclose(expected, actual, rtol=1e-08)
 
 
 def test_fit(fit, data):
@@ -98,4 +175,4 @@ def test_fit(fit, data):
     """
     expected = fit
     actual = pystable.fit(data)
-    assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
+    np.testing.assert_allclose(expected, actual, rtol=1e-08)
