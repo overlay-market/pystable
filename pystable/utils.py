@@ -1,6 +1,6 @@
 import os
 
-LIBSTABLE_PATH = 'libstable/stable/libs/libstable.so'
+LIBSTABLE_PATH = 'pystable/_extensions/libstable.so'
 
 
 def libstable_path(libstable_path=LIBSTABLE_PATH) -> str:
