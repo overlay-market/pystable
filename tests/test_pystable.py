@@ -1,62 +1,91 @@
 import os
 import pytest
+import typing as tp
 import pandas as pd
 import numpy as np
 import pystable
 
 
 @pytest.fixture
-def stables() -> pd.DataFrame:
+def fit() -> tp.List[float]:
     """
-    Fixture to get stable distribution examples
+    Fixture to get stable distribution example params
     """
     base = os.path.dirname(os.path.abspath(__file__))
     base = os.path.join(base, 'helpers')
-    base = os.path.join(base, 'stable')
-    base = os.path.join(base, 'stables.csv')  # TODO: should have csv w rows as (a, b, loc, scale, cdf_values, pdf_values, quantile_values)
-    return pd.read_csv(base)
+    base = os.path.join(base, 'fit.csv')
+    return pd.read_csv(base).to_numpy().tolist()
 
 
 @pytest.fixture
-def dataset() -> (pd.DataFrame, pd.DataFrame):
+def data() -> tp.List[float]:
     """
     Fixture to get dataset and associated fit
     """
     base = os.path.dirname(os.path.abspath(__file__))
     base = os.path.join(base, 'helpers')
-    base = os.path.join(base, 'data')
-    base = os.path.join(base, 'data.csv')  # TODO:
-
-    data = pd.read_csv(os.path.join(base, 'data.csv'))
-    fit = pd.read_csv(os.path.join(base, 'fit.csv'))
-    return data, fit
+    base = os.path.join(base, 'data.csv')
+    return pd.read_csv(base).to_numpy().tolist()
 
 
-def test_cdf(stables):
+@pytest.fixture
+def cdfs() -> pd.DataFrame:
+    """
+    Fixture to get dataset and associated fit
+    """
+    base = os.path.dirname(os.path.abspath(__file__))
+    base = os.path.join(base, 'helpers')
+    base = os.path.join(base, 'cdfs.csv')
+    return pd.read_csv(base)
+
+
+@pytest.fixture
+def pdfs() -> pd.DataFrame:
+    """
+    Fixture to get dataset and associated fit
+    """
+    base = os.path.dirname(os.path.abspath(__file__))
+    base = os.path.join(base, 'helpers')
+    base = os.path.join(base, 'pdfs.csv')
+    return pd.read_csv(base)
+
+
+@pytest.fixture
+def quantiles() -> pd.DataFrame:
+    """
+    Fixture to get dataset and associated fit
+    """
+    base = os.path.dirname(os.path.abspath(__file__))
+    base = os.path.join(base, 'helpers')
+    base = os.path.join(base, 'quantiles.csv')
+    return pd.read_csv(base)
+
+
+def test_cdf(fit, cdfs):
     """
     Tests cdf values for stable examples
     """
     pass
 
 
-def test_pdf(stables):
+def test_pdf():
     """
     Tests pdf values for stable examples
     """
     pass
 
 
-def test_quantile(stables):
+def test_quantile():
     """
     Tests quantile values for stable examples
     """
     pass
 
 
-def test_fit(dataset):
+def test_fit(fit, data):
     """
     Tests stable param estimation for data
     """
-    data, fit = dataset
-    params = pystable.fit(data)
-    assert np.testing.assert_allclose(fit, params, rtol=1e-08)
+    expected = fit
+    actual = pystable.fit(data)
+    assert np.testing.assert_allclose(expected, actual, rtol=1e-08)
