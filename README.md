@@ -50,3 +50,9 @@ $ poetry build
 - [ ] create lib structure
 - [x] create example file utilizing pystable lib
 - [x] `import ctypes as ct`
+- [ ] Main functions:
+  - [ ] `stable_pdf`: `./libstable/stable/src/stable.h#L256`
+  - [ ] `stable_cdf`: `./libstable/stable/src/stable.h#L287`
+  - [ ] `stable_q`: `./libstable/stable/src/stable.h#L301`
+  - [ ] `stable_rnd`: `./libstable/stable/src/stable.h#L446`
+  - [ ] `stable_fit` we'll probably have to do something similar to the matlab front end code where we use multiple fitting fns of theres
