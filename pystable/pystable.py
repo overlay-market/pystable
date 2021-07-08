@@ -1,4 +1,4 @@
-import utils
+import pystable.utils
 import ctypes as ct
 import typing as tp
 
