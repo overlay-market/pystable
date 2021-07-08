@@ -4,6 +4,7 @@ import ctypes as ct
 import typing as tp
 import pandas as pd
 import numpy as np
+import time
 
 from pystable import pystable
 
@@ -28,7 +29,7 @@ def data() -> tp.List[float]:
     base = os.path.dirname(os.path.abspath(__file__))
     base = os.path.join(base, 'helpers')
     base = os.path.join(base, 'data.csv')
-    return pd.read_csv(base).to_numpy().tolist()
+    return pd.read_csv(base)['value'].to_numpy().tolist()
 
 
 @pytest.fixture
@@ -135,6 +136,44 @@ def test_stable_pdf(lib, fit, pdfs):
 
     actual = pystable.stable_pdf(lib, pdf_params)
     np.testing.assert_allclose(expected, actual, rtol=1e-08)
+
+
+def test_stable_fit(lib, fit, data):
+    """
+    Tests fit values for stable example
+    """
+    expected = [fit['alpha'], fit['beta'], fit['sigma'], 0, fit['mu']]
+
+    init_fit = {
+        'alpha': 2,
+        'beta': 0,
+        'sigma': 1,
+        'mu': 0,
+        'parameterization': 1
+    }
+    dist = create_stable(lib, init_fit)
+
+    length = len(data)
+    fit_params = {
+        'dist': dist,
+        'data': data,
+        'length': length,
+    }
+
+    # time it ...
+    start = time.time()
+    status = pystable.stable_fit(lib, fit_params)
+    end = time.time()
+    print('start', start)
+    print('end', end)
+    print('execution time', end - start)
+
+    actual = [dist.contents.alpha, dist.contents.beta,
+              dist.contents.sigma, dist.contents.mu_0, dist.contents.mu_1]
+
+    np.testing.assert_allclose(expected, actual, rtol=1e-08)
+
+    # TODO: assert status > 0 ?
 
 
 # Public API tests
