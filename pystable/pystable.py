@@ -1,11 +1,18 @@
 import ctypes as ct
+import os
 import typing as tp
 
-from pystable import utils
+LIBSTABLE_PATH = 'pystable/_extensions/libstable.so'
 
+
+def libstable_path(libstable_path=LIBSTABLE_PATH) -> str:
+    '''Get path to libstable.so'''
+    path = os.path.dirname(os.path.realpath(__file__))
+    path = os.path.abspath(os.path.join(path, os.pardir))
+    return os.path.abspath(os.path.join(path, libstable_path))
 
 def load_libstable() -> ct.CDLL:
-    return ct.cdll.LoadLibrary(utils.libstable_path())
+    return ct.cdll.LoadLibrary(libstable_path())
 
 
 class STABLE_DIST(ct.Structure):
