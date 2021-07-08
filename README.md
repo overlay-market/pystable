@@ -21,11 +21,24 @@ Arch Linux:
 $ yay gsl
 ```
 
+Mac:
+```
+$ brew install gsl
+```
+
 ## Build `libstable`
 ```
 $ cd libstable
 $ make
 ```
+
+or
+
+```
+$ poetry shell
+$ poetry build
+```
+
 
 
 ## TODO
@@ -33,7 +46,7 @@ $ make
 - [ ] tests
 - [ ] handle errors
   - [ ] handle NULL pointer errors
-  - [ ] handle `err` 
+  - [ ] handle `err`
 - [ ] create lib structure
 - [x] create example file utilizing pystable lib
 - [x] `import ctypes as ct`
