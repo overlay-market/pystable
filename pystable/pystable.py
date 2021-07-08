@@ -107,3 +107,15 @@ def c_stable_cdf_point(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
     args = (ct.POINTER(STABLE_DIST), ct.c_double, ct.POINTER(ct.c_double))
     ret = ct.c_double
     return wrap_function(lib, 'stable_cdf_point', ret, args)
+
+
+def stable_fit(lib: ct.CDLL, params: tp.Dict) -> int:
+    c_fn = c_stable_fit(lib, params)
+    array_type = ct.c_double * params['length']
+    return c_fn(params['dist'], array_type(*params['data']), params['length'])
+
+
+def c_stable_fit(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+    args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint)
+    ret = ct.c_int
+    return wrap_function(lib, 'stable_fit', ret, args)
