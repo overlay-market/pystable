@@ -1,28 +1,20 @@
-import pystable.utils
 import ctypes as ct
+import os
 import typing as tp
+from pystable.stable_dist import STABLE_DIST
+
+LIBSTABLE_PATH = 'pystable/_extensions/libstable.so'
+
+
+def libstable_path(libstable_path=LIBSTABLE_PATH) -> str:
+    '''Get path to libstable.so'''
+    path = os.path.dirname(os.path.realpath(__file__))
+    path = os.path.abspath(os.path.join(path, os.pardir))
+    return os.path.abspath(os.path.join(path, libstable_path))
 
 
 def load_libstable() -> ct.CDLL:
-    return ct.cdll.LoadLibrary(utils.libstable_path())
-
-
-class STABLE_DIST(ct.Structure):
-    '''
-    Stable distribution structure.
-
-    Parameters:
-      alpha [ct.c_double]:  Stability index
-      beta  [ct.c_double]:  Skewness parameter
-      scale [ct.c_double]:  Scale parameter
-      mu_0  [ct.c_double]:  0-parametrization local parameter
-      mu_1  [ct.c_double]:  corresponding 1-parametrization local parameter
-    '''
-    _fields_ = [('alpha', ct.c_double),
-                ('beta', ct.c_double),
-                ('sigma', ct.c_double),
-                ('mu_0', ct.c_double),
-                ('mu_1', ct.c_double)]
+    return ct.cdll.LoadLibrary(libstable_path())
 
 
 def wrap_function(lib: ct.CDLL, funcname: str, restype, argtypes
@@ -35,23 +27,17 @@ def wrap_function(lib: ct.CDLL, funcname: str, restype, argtypes
 
 
 def stable_create(lib: ct.CDLL, params: tp.Dict) -> STABLE_DIST:
-    c_fn = c_stable_create(lib, params)
+    c_fn = c_stable_create(lib)
     return c_fn(params['alpha'], params['beta'], params['sigma'], params['mu'],
                 params['parameterization'])
 
 
-def c_stable_create(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+def c_stable_create(lib: ct.CDLL) -> ct.CDLL._FuncPtr:
     '''
     Call `stable_create` function to create a `StableDist` struct.
 
     Inputs:
       lib    [ct.CDLL]:  libstable dynamically linked library
-      params [Dict]:  `stable_create` input arguments
-        alpha            [double]:
-        beta             [double]:
-        mu               [double]:
-        sigma            [double]:
-        parameterization [int]:
 
     Outputs:
         [Stable_DIST object]: contains resulting `StableDist` struct parameters
@@ -106,3 +92,15 @@ def c_stable_cdf_point(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
     args = (ct.POINTER(STABLE_DIST), ct.c_double, ct.POINTER(ct.c_double))
     ret = ct.c_double
     return wrap_function(lib, 'stable_cdf_point', ret, args)
+
+
+def stable_fit(lib: ct.CDLL, params: tp.Dict) -> int:
+    c_fn = c_stable_fit(lib, params)
+    array_type = ct.c_double * params['length']
+    return c_fn(params['dist'], array_type(*params['data']), params['length'])
+
+
+def c_stable_fit(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+    args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint)
+    ret = ct.c_int
+    return wrap_function(lib, 'stable_fit', ret, args)
