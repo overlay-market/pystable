@@ -1,6 +1,7 @@
-import pystable.utils
 import ctypes as ct
 import typing as tp
+
+from pystable import utils
 
 
 def load_libstable() -> ct.CDLL:
