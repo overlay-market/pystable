@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import time
 
-from pystable import pystable
+import pystable
 
 
 def create_stable(clib: ct.CDLL, params: tp.Dict[str, float]):
