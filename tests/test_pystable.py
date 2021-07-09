@@ -114,7 +114,7 @@ def test_stable_cdf(lib, fit, cdfs):
     }
 
     actual = pystable.stable_cdf(lib, cdf_params)
-    np.testing.assert_allclose(expected, actual, rtol=1e-08)
+    np.testing.assert_allclose(expected, actual, rtol=1e-06)
 
 
 def test_stable_pdf(lib, fit, pdfs):
@@ -135,7 +135,14 @@ def test_stable_pdf(lib, fit, pdfs):
     }
 
     actual = pystable.stable_pdf(lib, pdf_params)
-    np.testing.assert_allclose(expected, actual, rtol=1e-08)
+    np.testing.assert_allclose(expected, actual, rtol=1e-06)
+
+
+def test_stable_quantile(lib, fit, quantiles):
+    """
+    Tests inverse cdf values for stable example
+    """
+    pass
 
 
 def test_stable_fit(lib, fit, data):
@@ -159,21 +166,11 @@ def test_stable_fit(lib, fit, data):
         'data': data,
         'length': length,
     }
-
-    # time it ...
-    start = time.time()
     status = pystable.stable_fit(lib, fit_params)
-    end = time.time()
-    print('start', start)
-    print('end', end)
-    print('execution time', end - start)
-
+    assert status == 0  # 0 == finished
     actual = [dist.contents.alpha, dist.contents.beta,
               dist.contents.sigma, dist.contents.mu_0, dist.contents.mu_1]
-
-    np.testing.assert_allclose(expected, actual, rtol=1e-08)
-
-    # TODO: assert status > 0 ?
+    np.testing.assert_allclose(expected, actual, rtol=1e-06)
 
 
 # Public API tests
@@ -185,7 +182,7 @@ def test_cdf(fit, cdfs):
     expected = cdfs['value'].tolist()
     x = cdfs['x'].to_numpy().tolist()
     actual = pystable.cdf(x, *fit)
-    np.testing.assert_allclose(expected, actual, rtol=1e-08)
+    np.testing.assert_allclose(expected, actual, rtol=1e-06)
 
 
 def test_pdf(fit, pdfs):
@@ -195,7 +192,7 @@ def test_pdf(fit, pdfs):
     expected = pdfs['value'].tolist()
     x = pdfs['x'].to_numpy().tolist()
     actual = pystable.pdf(x, *fit)
-    np.testing.assert_allclose(expected, actual, rtol=1e-08)
+    np.testing.assert_allclose(expected, actual, rtol=1e-06)
 
 
 def test_quantile(fit, quantiles):
@@ -205,7 +202,7 @@ def test_quantile(fit, quantiles):
     expected = quantiles['value'].tolist()
     q = quantiles['q'].to_numpy().tolist()
     actual = pystable.q(q, *fit)
-    np.testing.assert_allclose(expected, actual, rtol=1e-08)
+    np.testing.assert_allclose(expected, actual, rtol=1e-06)
 
 
 def test_fit(fit, data):
@@ -214,4 +211,4 @@ def test_fit(fit, data):
     """
     expected = fit
     actual = pystable.fit(data)
-    np.testing.assert_allclose(expected, actual, rtol=1e-08)
+    np.testing.assert_allclose(expected, actual, rtol=1e-06)

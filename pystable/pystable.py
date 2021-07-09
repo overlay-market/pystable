@@ -78,6 +78,25 @@ def c_stable_checkparams(lib: ct.CDLL) -> ct.CDLL._FuncPtr:
     return wrap_function(lib, 'stable_checkparams', ret, args)
 
 
+def stable_pdf(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
+    c_fn = c_stable_pdf(lib, params)
+    array_type = ct.c_double * params['Nx']
+    LP_c_double = ct.POINTER(ct.c_double)
+    pdf = (ct.c_double * params['Nx'])()
+
+    c_fn(params['dist'], array_type(*params['x']), params['Nx'], pdf,
+         LP_c_double())
+
+    return list(pdf)
+
+
+def c_stable_pdf(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+    args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint,
+            ct.POINTER(ct.c_double), ct.POINTER(ct.c_double))
+    ret = ct.c_void_p
+    return wrap_function(lib, 'stable_pdf', ret, args)
+
+
 def stable_cdf(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
     c_fn = c_stable_cdf(lib, params)
     array_type = ct.c_double * params['Nx']
