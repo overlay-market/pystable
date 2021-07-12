@@ -1,10 +1,15 @@
 [tool.poetry]
 name = "pystable"
 version = "0.1.0"
-description = ""
-authors = ["mikeyrf <mikeyrf@users.noreply.github.com>"]
+description = "Python wrapper for the libstable C library"
+authors = [
+  "RJ Rybarczyk <rj@rybar.tech>",
+  "Michael Feldman <23126274+mikeyrf@users.noreply.github.com>"
+]
 license = "GPL-3.0-only"
 readme = "README.md"
+repository = "https://github.com/overlay-market/pystable"
+keywords = ['alpha stable', 'distribution', 'statistics', 'probability']
 
 packages = [{include = "pystable"}]
 include = [

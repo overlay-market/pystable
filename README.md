@@ -12,7 +12,7 @@ import pystable
 alpha, beta, loc, scale = pystable.fit(data)
 ```
 
-## Build `libstable`
+## Setup
 ### Dependencies
 Install the GNU Scientific Library (GSL).
 
@@ -26,7 +26,7 @@ Mac:
 $ brew install gsl
 ```
 
-## Build `libstable`
+### Build `libstable`
 ```
 $ cd libstable
 $ make
@@ -35,7 +35,6 @@ $ make
 or
 
 ```
-$ poetry shell
 $ poetry build
 ```
 
