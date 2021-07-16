@@ -26,6 +26,11 @@ Mac:
 $ brew install gsl
 ```
 
+Ubuntu:
+```
+$ sudo apt install gsl-bin libgsl0-dev
+```
+
 ## Build `libstable`
 ```
 $ cd libstable
