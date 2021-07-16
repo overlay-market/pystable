@@ -34,3 +34,6 @@ profile.html
 # editor
 
 .vscode
+
+# libstable build artifacts
+/libstable/stable/src/*.o
