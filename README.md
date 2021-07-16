@@ -44,8 +44,6 @@ $ poetry shell
 $ poetry build
 ```
 
-
-
 ## TODO
 - [ ] typings
 - [ ] tests
@@ -56,8 +54,18 @@ $ poetry build
 - [x] create example file utilizing pystable lib
 - [x] `import ctypes as ct`
 - [ ] Main functions:
-  - [ ] `stable_pdf`: `./libstable/stable/src/stable.h#L256`
-  - [ ] `stable_cdf`: `./libstable/stable/src/stable.h#L287`
+  - [x] `stable_pdf`: `./libstable/stable/src/stable.h#L256`
+    - [x] example
+    - [ ] test
+  - [x] `stable_cdf`: `./libstable/stable/src/stable.h#L287`
+    - [x] example
+    - [ ] test
   - [ ] `stable_q`: `./libstable/stable/src/stable.h#L301`
+    - [ ] example
+    - [ ] test
   - [ ] `stable_rnd`: `./libstable/stable/src/stable.h#L446`
-  - [ ] `stable_fit` we'll probably have to do something similar to the matlab front end code where we use multiple fitting fns of theres
+    - [ ] example
+    - [ ] test
+  - [x] `stable_fit` we'll probably have to do something similar to the matlab front end code where we use multiple fitting fns of theres
+    - [ ] example
+    - [ ] test

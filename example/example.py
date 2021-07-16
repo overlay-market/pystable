@@ -1,6 +1,8 @@
 import os
 import pandas as pd
-import pystable
+import sys
+sys.path.append('/home/rrybarczyk/Dev/pystable')
+import pystable  # noqa: E402
 
 
 def read_helpers(file_name: str):
@@ -10,6 +12,21 @@ def read_helpers(file_name: str):
     path = os.path.abspath(os.path.join(path, file_name))
 
     return pd.read_csv(path)
+
+
+def get_fn_params(fn_name: str, dist):
+    df_params = read_helpers('{}.csv'.format(fn_name))
+    x = []
+    for i in df_params['x']:
+        x.append(i)
+    Nx = len(x)
+    fn_data = [0] * Nx
+    return {
+            'dist': dist,
+            'x': x,
+            'Nx': Nx,
+            'fn': fn_data,
+        }
 
 
 def run() -> None:
@@ -45,22 +62,19 @@ def run() -> None:
     print('stable_cdf_point result: ', ret)
     print()
 
-    df_params = read_helpers('cdfs.csv')
-    x = []
-    for i in df_params['x']:
-        x.append(i)
-    Nx = len(x)
-    cdf = [0] * Nx
-    cdf_params = {
-            'dist': dist,
-            'x': x,
-            'Nx': Nx,
-            'cdf': cdf,
-        }
-
     # `stable_cdf`
+    cdf_params = get_fn_params('cdf', dist)
     cdf = pystable.stable_cdf(lib, cdf_params)
     print('stable_cdf result: ', cdf)
+    print()
+
+    # `stable_fit`, TODO
+
+    # `stable_pdf`
+    pdf_params = get_fn_params('pdf', dist)
+    pdf = pystable.stable_pdf(lib, pdf_params)
+    print('stable_pdf result: ', pdf)
+    print()
 
 
 if __name__ == "__main__":
