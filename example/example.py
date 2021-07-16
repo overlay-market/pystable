@@ -29,6 +29,21 @@ def get_fn_params(fn_name: str, dist):
         }
 
 
+def get_quantiles_params(dist):
+    df_params = read_helpers('quantiles.csv')
+    q = []
+    for i in df_params['q']:
+        q.append(i)
+    Nq = len(q)
+    fn_data = [0] * Nq
+    return {
+            'dist': dist,
+            'q': q,
+            'Nq': Nq,
+            'fn': fn_data,
+        }
+
+
 def run() -> None:
     lib = pystable.load_libstable()
     dist_params = {
@@ -74,6 +89,12 @@ def run() -> None:
     pdf_params = get_fn_params('pdf', dist)
     pdf = pystable.stable_pdf(lib, pdf_params)
     print('stable_pdf result: ', pdf)
+    print()
+
+    # `stable_q`
+    q_params = get_quantiles_params(dist)
+    q = pystable.stable_q(lib, q_params)
+    print('stable_q result: ', q)
     print()
 
 

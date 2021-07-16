@@ -60,10 +60,10 @@ $ poetry build
   - [x] `stable_cdf`: `./libstable/stable/src/stable.h#L287`
     - [x] example
     - [ ] test
-  - [ ] `stable_q`: `./libstable/stable/src/stable.h#L301`
-    - [ ] example
+  - [x] `stable_q`: `./libstable/stable/src/stable.h#L301`
+    - [x] example
     - [ ] test
-  - [ ] `stable_rnd`: `./libstable/stable/src/stable.h#L446`
+  - [x] `stable_rnd`: `./libstable/stable/src/stable.h#L446`
     - [ ] example
     - [ ] test
   - [x] `stable_fit` we'll probably have to do something similar to the matlab front end code where we use multiple fitting fns of theres

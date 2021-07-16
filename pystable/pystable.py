@@ -123,3 +123,38 @@ def c_stable_pdf(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
             ct.POINTER(ct.c_double), ct.POINTER(ct.c_double))
     ret = ct.c_void_p
     return wrap_function(lib, 'stable_pdf', ret, args)
+
+
+def stable_q(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
+    c_fn = c_stable_q(lib, params)
+    array_type = ct.c_double * params['Nq']
+    LP_c_double = ct.POINTER(ct.c_double)
+    q = (ct.c_double * params['Nq'])()
+
+    c_fn(params['dist'], array_type(*params['q']), params['Nq'], q,
+         LP_c_double())
+
+    return list(q)
+
+
+def c_stable_q(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+    args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint,
+            ct.POINTER(ct.c_double), ct.POINTER(ct.c_double))
+    ret = ct.c_void_p
+    return wrap_function(lib, 'stable_q', ret, args)
+
+
+def stable_rnd(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
+    c_fn = c_stable_rnd(lib, params)
+    array_type = ct.c_double * params['rnd']
+    rnd = (ct.c_double * params['n'])()
+
+    c_fn(params['dist'], array_type(*params['rnd']), params['n'])
+
+    return list(rnd)
+
+
+def c_stable_rnd(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+    args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint)
+    ret = ct.c_void_p
+    return wrap_function(lib, 'stable_rnd', ret, args)
