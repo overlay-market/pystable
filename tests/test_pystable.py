@@ -83,3 +83,46 @@ class TestPystable(unittest.TestCase):
         self.assertEqual(expected['sigma'], actual.contents.sigma)
         self.assertEqual(expected['mu_0'], actual.contents.mu_0)
         self.assertEqual(expected['mu_1'], actual.contents.mu_1)
+
+    def test_c_stable_cdf(self):
+        dist = pystable.stable_create(self.lib, self.dist_params)
+        params = self.get_fn_params('cdf', dist)
+        actual = pystable.c_stable_cdf(self.lib, params)
+        self.assertEqual('stable_cdf', actual.__name__)
+
+    def test_stable_cdf(self):
+        sigfig = '%.9f'
+        expected = self.get_helpers('cdf').value.tolist()
+        expected = [sigfig % elem for elem in expected]
+        dist = pystable.stable_create(self.lib, self.dist_params)
+        params = self.get_fn_params('cdf', dist)
+        actual = pystable.stable_cdf(self.lib, params)
+        actual = [sigfig % elem for elem in actual]
+
+        for i in range(0, len(expected)):
+            if (expected[i] != actual[i]):
+                print('i: {} e: {} a: {}'.format(i, expected[i], actual[i]))
+            self.assertEqual(expected[i], actual[i])
+
+    def test_c_stable_pdf(self):
+        dist = pystable.stable_create(self.lib, self.dist_params)
+        params = self.get_fn_params('pdf', dist)
+        actual = pystable.c_stable_pdf(self.lib, params)
+        self.assertEqual('stable_pdf', actual.__name__)
+
+    def test_stable_pdf(self):
+        # RR TODO: 5+ sigfigs fail
+        sigfig = '%.4f'
+        expected = self.get_helpers('pdf').value.tolist()
+        expected = [sigfig % elem for elem in expected]
+        dist = pystable.stable_create(self.lib, self.dist_params)
+        params = self.get_fn_params('pdf', dist)
+        actual = pystable.stable_pdf(self.lib, params)
+        actual = [sigfig % elem for elem in actual]
+
+        for i in range(0, len(expected)):
+            if (expected[i] != actual[i]):
+                print('i: {} e: {} a: {}'.format(i, expected[i], actual[i]))
+            self.assertEqual(expected[i], actual[i])
+
+        self.assertEqual(expected, actual)
