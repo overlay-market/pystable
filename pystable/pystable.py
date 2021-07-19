@@ -1,29 +1,22 @@
 import ctypes as ct
 import typing as tp
-
+from pystable.stable_dist import STABLE_DIST
 from pystable import utils
 
 
-def load_libstable() -> ct.CDLL:
-    return ct.cdll.LoadLibrary(utils.libstable_path())
-
-
-class STABLE_DIST(ct.Structure):
+def load_libstable(libstable_path=None) -> ct.CDLL:
     '''
-    Stable distribution structure.
-
-    Parameters:
-      alpha [ct.c_double]:  Stability index
-      beta  [ct.c_double]:  Skewness parameter
-      scale [ct.c_double]:  Scale parameter
-      mu_0  [ct.c_double]:  0-parametrization local parameter
-      mu_1  [ct.c_double]:  corresponding 1-parametrization local parameter
+    Load the C libstable DLL
+    Inputs:
+        libstable_path [str]: Optional path to `libstable.so`. Default path is
+                              `pystable/_extensions/libstable.so`
+    Outputs:
+        [ct.CDLL]:            Dynamically linked libstable library
     '''
-    _fields_ = [('alpha', ct.c_double),
-                ('beta', ct.c_double),
-                ('sigma', ct.c_double),
-                ('mu_0', ct.c_double),
-                ('mu_1', ct.c_double)]
+    if libstable_path:
+        return ct.cdll.LoadLibrary(libstable_path)
+    else:
+        return ct.cdll.LoadLibrary(utils.libstable_path())
 
 
 def wrap_function(lib: ct.CDLL, funcname: str, restype, argtypes

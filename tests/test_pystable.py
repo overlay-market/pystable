@@ -159,70 +159,29 @@ def test_stable_q(lib, fit, quantiles):
     np.testing.assert_allclose(expected, actual, rtol=1e-05)
 
 
-def test_stable_fit(lib, fit, data):
-    """
-    Tests fit values for stable example
-    """
-    expected = [fit['alpha'], fit['beta'], fit['sigma'], 0, fit['mu']]
-
-    init_fit = {
-        'alpha': 2,
-        'beta': 0,
-        'sigma': 1,
-        'mu': 0,
-        'parameterization': 1
-    }
-    dist = create_stable(lib, init_fit)
-
-    length = len(data)
-    fit_params = {
-        'dist': dist,
-        'data': data,
-        'length': length,
-    }
-    status = pystable.stable_fit(lib, fit_params)
-    assert status == 0  # 0 == finished
-    actual = [dist.contents.alpha, dist.contents.beta,
-              dist.contents.sigma, dist.contents.mu_0, dist.contents.mu_1]
-    np.testing.assert_allclose(expected, actual, rtol=1e-05)
-
-
-# Public API tests
-
-def test_cdf(fit, cdfs):
-    """
-    Tests cdf values for stable example
-    """
-    expected = cdfs['value'].tolist()
-    x = cdfs['x'].to_numpy().tolist()
-    actual = pystable.cdf(x, *fit)
-    np.testing.assert_allclose(expected, actual, rtol=1e-05)
-
-
-def test_pdf(fit, pdfs):
-    """
-    Tests pdf values for stable example
-    """
-    expected = pdfs['value'].tolist()
-    x = pdfs['x'].to_numpy().tolist()
-    actual = pystable.pdf(x, *fit)
-    np.testing.assert_allclose(expected, actual, rtol=1e-05)
-
-
-def test_quantile(fit, quantiles):
-    """
-    Tests quantile values for stable example
-    """
-    expected = quantiles['value'].tolist()
-    q = quantiles['q'].to_numpy().tolist()
-    actual = pystable.q(q, *fit)
-    np.testing.assert_allclose(expected, actual, rtol=1e-05)
-
-
-def test_fit(fit, data):
-    """
-    Tests stable param estimation for dataset
-    """
-    expected = fit
-    actual = pystable.fit(data)
-    np.testing.assert_allclose(expected, actual, rtol=1e-05)
+#  def test_stable_fit(lib, fit, data):
+#      """
+#      Tests fit values for stable example
+#      """
+#      expected = [fit['alpha'], fit['beta'], fit['sigma'], 0, fit['mu']]
+#
+#      init_fit = {
+#          'alpha': 2,
+#          'beta': 0,
+#          'sigma': 1,
+#          'mu': 0,
+#          'parameterization': 1
+#      }
+#      dist = create_stable(lib, init_fit)
+#
+#      length = len(data)
+#      fit_params = {
+#          'dist': dist,
+#          'data': data,
+#          'length': length,
+#      }
+#      status = pystable.stable_fit(lib, fit_params)
+#      assert status == 0  # 0 == finished
+#      actual = [dist.contents.alpha, dist.contents.beta,
+#                dist.contents.sigma, dist.contents.mu_0, dist.contents.mu_1]
+#      np.testing.assert_allclose(expected, actual, rtol=1e-05)
