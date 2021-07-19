@@ -128,7 +128,7 @@ def c_stable_pdf(lib: ct.CDLL) -> ct.CDLL._FuncPtr:
 
 
 def stable_q(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
-    c_fn = c_stable_q(lib, params)
+    c_fn = c_stable_q(lib)
     array_type = ct.c_double * params['Nq']
     LP_c_double = ct.POINTER(ct.c_double)
     q = (ct.c_double * params['Nq'])()
@@ -139,7 +139,7 @@ def stable_q(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
     return list(q)
 
 
-def c_stable_q(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+def c_stable_q(lib: ct.CDLL) -> ct.CDLL._FuncPtr:
     args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint,
             ct.POINTER(ct.c_double), ct.POINTER(ct.c_double))
     ret = ct.c_void_p
