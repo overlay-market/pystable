@@ -26,6 +26,11 @@ Mac:
 $ brew install gsl
 ```
 
+Ubuntu:
+```
+$ sudo apt install gsl-bin libgsl0-dev
+```
+
 ## Build `libstable`
 ```
 $ cd libstable
@@ -39,14 +44,41 @@ $ poetry shell
 $ poetry build
 ```
 
-
-
 ## TODO
+- [x] `import ctypes as ct`
+- [x] create lib structure
+- [x] create example file utilizing pystable lib
 - [ ] typings
-- [ ] tests
 - [ ] handle errors
   - [ ] handle NULL pointer errors
   - [ ] handle `err`
-- [ ] create lib structure
-- [x] create example file utilizing pystable lib
-- [x] `import ctypes as ct`
+- [x] `stable_checkparams`
+  - [x] impl
+  - [x] test
+  - [x] example
+  - [ ] handle error
+  - [ ] test error
+- [x] `stable_create`
+  - [x] impl
+  - [x] test
+  - [x] example
+- [x] `stable_cdf`
+  - [x] impl
+  - [x] test
+  - [x] example
+- [x] `stable_pdf`
+  - [x] impl
+  - [x] test
+  - [x] example
+- [x] `stable_fit`
+  - [x] impl
+  - [ ] test
+  - [ ] example
+- [ ] `stable_q`
+  - [x] impl
+  - [x] test
+  - [ ] example
+- [ ] `stable_rnd`
+  - [x] impl
+  - [ ] test
+  - [ ] example
