@@ -28,6 +28,11 @@ def wrap_function(lib: ct.CDLL, funcname: str, restype, argtypes
     return func
 
 
+def create(params: tp.Dict, path=None) -> STABLE_DIST:
+    lib = load_libstable(path)
+    return stable_create(lib, params)
+
+
 def stable_create(lib: ct.CDLL, params: tp.Dict) -> STABLE_DIST:
     c_fn = c_stable_create(lib)
     return c_fn(params['alpha'], params['beta'], params['sigma'], params['mu'],

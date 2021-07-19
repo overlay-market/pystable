@@ -38,6 +38,23 @@ class TestPystable(unittest.TestCase):
     def test_stable_checkparams_err(self):
         pass
 
+    def test_create(self):
+        '''Test `create` wrapper'''
+        expected = {
+                'alpha': 1.3278285879842862,
+                'beta': 0.0816835526225623,
+                'sigma': 0.0006409442772706,
+                'mu_0': -0.00011779403879886721,
+                'mu_1': -2.52748167384e-05
+                }
+        params = self.get_fit()
+        actual = pystable.create(params)
+        self.assertEqual(expected['alpha'], actual.contents.alpha)
+        self.assertEqual(expected['beta'], actual.contents.beta)
+        self.assertEqual(expected['sigma'], actual.contents.sigma)
+        self.assertEqual(expected['mu_0'], actual.contents.mu_0)
+        self.assertEqual(expected['mu_1'], actual.contents.mu_1)
+
     def test_stable_create(self):
         '''Test `stable_cdf` high-level function'''
         lib = pystable.load_libstable()
