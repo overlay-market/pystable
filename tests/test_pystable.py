@@ -119,3 +119,36 @@ class TestPystable(unittest.TestCase):
         lib = pystable.load_libstable()
         actual = pystable.c_stable_pdf(lib)
         self.assertEqual('stable_pdf', actual.__name__)
+
+    @unittest.skip(reason='failing')
+    def test_stable_fit(self):
+        '''Test `stable_fit` high-level function'''
+        lib = pystable.load_libstable()
+        fit = self.get_fit()
+        expected = [fit['alpha'], fit['beta'], fit['sigma'], 0, fit['mu']]
+
+        init_fit = {'alpha': 2, 'beta': 0, 'sigma': 1, 'mu': 0,
+                    'parameterization': 1}
+        dist = pystable.stable_create(lib, init_fit)
+
+        base = os.path.dirname(os.path.abspath(__file__))
+        base = os.path.join(base, 'helpers')
+        base = os.path.join(base, 'data.csv')
+        data = pd.read_csv(base)['value'].to_numpy().tolist()
+
+        fit_params = {
+                'dist': dist,
+                'data': data,
+                'length': len(data),
+                }
+        status = pystable.stable_fit(lib, fit_params)
+        assert status == 0  # 0 == finished
+        actual = [dist.contents.alpha, dist.contents.beta,
+                  dist.contents.sigma, dist.contents.mu_0, dist.contents.mu_1]
+        np.testing.assert_allclose(expected, actual, rtol=1e-05)
+
+    def test_c_stable_fit(self):
+        '''Test `stable_fit` low-level function'''
+        lib = pystable.load_libstable()
+        actual = pystable.c_stable_fit(lib)
+        self.assertEqual('stable_fit', actual.__name__)
