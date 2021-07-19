@@ -182,15 +182,14 @@ def c_stable_q(lib: ct.CDLL) -> ct.CDLL._FuncPtr:
     return wrap_function(lib, 'stable_q', ret, args)
 
 
-def rnd(dist, rnd: tp.List[float], n: int, path=None) -> tp.List[float]:
+def rnd(dist: STABLE_DIST, n: int, path=None) -> tp.List[float]:
     lib = load_libstable(path)
-    return stable_rnd(lib, dist, rnd, n)
+    return stable_rnd(lib, dist, n)
 
 
-def stable_rnd(lib: ct.CDLL, dist, rnd: tp.List[float],
-               n: int) -> tp.List[float]:
+def stable_rnd(lib: ct.CDLL, dist: STABLE_DIST, n: int) -> tp.List[float]:
     c_fn = c_stable_rnd(lib)
-    array_type = ct.c_double * rnd
+    array_type = ct.c_double * n
     rnd = (ct.c_double * n)()
     c_fn(dist, array_type(*rnd), n)
     return list(rnd)
