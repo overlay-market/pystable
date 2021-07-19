@@ -85,12 +85,12 @@ def c_stable_cdf(lib: ct.CDLL) -> ct.CDLL._FuncPtr:
 
 
 def stable_cdf_point(lib: ct.CDLL, params: tp.Dict):
-    c_fn = c_stable_cdf_point(lib, params)
+    c_fn = c_stable_cdf_point(lib)
     LP_c_double = ct.POINTER(ct.c_double)
     return c_fn(params['dist'], params['x'], LP_c_double())
 
 
-def c_stable_cdf_point(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+def c_stable_cdf_point(lib: ct.CDLL) -> ct.CDLL._FuncPtr:
     args = (ct.POINTER(STABLE_DIST), ct.c_double, ct.POINTER(ct.c_double))
     ret = ct.c_double
     return wrap_function(lib, 'stable_cdf_point', ret, args)
@@ -147,7 +147,7 @@ def c_stable_q(lib: ct.CDLL) -> ct.CDLL._FuncPtr:
 
 
 def stable_rnd(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
-    c_fn = c_stable_rnd(lib, params)
+    c_fn = c_stable_rnd(lib)
     array_type = ct.c_double * params['rnd']
     rnd = (ct.c_double * params['n'])()
 
@@ -156,7 +156,7 @@ def stable_rnd(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
     return list(rnd)
 
 
-def c_stable_rnd(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+def c_stable_rnd(lib: ct.CDLL) -> ct.CDLL._FuncPtr:
     args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint)
     ret = ct.c_void_p
     return wrap_function(lib, 'stable_rnd', ret, args)

@@ -120,17 +120,25 @@ class TestPystable(unittest.TestCase):
         actual = pystable.stable_cdf(lib, cdf_params)
         np.testing.assert_allclose(expected, actual, rtol=1e-08)
 
-    def test_c_stable_cdf(self):
-        '''Test `stable_cdf` low-level function'''
-        lib = pystable.load_libstable()
-        actual = pystable.c_stable_cdf(lib)
-        self.assertEqual('stable_cdf', actual.__name__)
-
     def test_stable_cdf_point(self):
-        pass
+        '''Test `stable_cdf_point` high-level function'''
+        lib = pystable.load_libstable()
+
+        base = os.path.dirname(os.path.abspath(__file__))
+        base = os.path.join(base, 'helpers/fit.csv')
+        fit = pd.read_csv(base).to_dict(orient='records')[0]
+        dist = pystable.stable_create(lib, fit)
+        params = {'dist': dist, 'x': -0.009700000000000002}
+        actual = pystable.stable_cdf_point(lib, params)
+
+        expected = 0.006362143180580383
+        self.assertEqual(expected, actual)
 
     def test_c_stable_cdf_point(self):
-        pass
+        '''Test `stable_cdf_point` low-level function'''
+        lib = pystable.load_libstable()
+        actual = pystable.c_stable_cdf_point(lib)
+        self.assertEqual('stable_cdf_point', actual.__name__)
 
     def test_stable_pdf(self):
         '''Test `stable_pdf` high-level function'''
@@ -178,3 +186,14 @@ class TestPystable(unittest.TestCase):
         lib = pystable.load_libstable()
         actual = pystable.c_stable_q(lib)
         self.assertEqual('stable_q', actual.__name__)
+
+    @unittest.skip(reason='Need test vectors')
+    def test_stable_rnd(self):
+        '''Test `stable_rnd` high-level function'''
+        pass
+
+    def test_c_stable_rnd(self):
+        '''Test `stable_rnd` low-level function'''
+        lib = pystable.load_libstable()
+        actual = pystable.c_stable_rnd(lib)
+        self.assertEqual('stable_rnd', actual.__name__)
