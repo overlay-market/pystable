@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import pystable
-import utils
+
 
 def read_helpers(file_name: str):
     path = os.path.dirname(os.path.realpath(__file__))
@@ -11,22 +11,18 @@ def read_helpers(file_name: str):
 
     return pd.read_csv(path)
 
+
 def run() -> None:
+    # Load libstable CDLL
     lib = pystable.load_libstable()
-    dist_params = {
-            'alpha': 1.3278285879842862,
-            'beta': 0.0816835526225623,
-            'mu': -0.0000252748167384907,  # loc
-            'sigma': 0.0006409442772706084,  # scale
-            'parameterization': 1,
-        }
-    # Check `dist_params` validity
-    check = pystable.stable_checkparams(lib, dist_params)
-    print('stable_checkparams (0 means OK): ', check)
-    print()
+    fit = read_helpers('fit.csv')
+
+    # Check `fit` validity, returns 0 on success
+    check = pystable.stable_checkparams(lib, fit)
+    assert check == 0
 
     # Call `create_stable` input args to create pointer to `StableDist` struct
-    dist = pystable.stable_create(lib, dist_params)
+    dist = pystable.stable_create(lib, fit)
     print('DIST', type(dist))
     dist_result = {
               'alpha': dist.contents.alpha,
@@ -35,29 +31,21 @@ def run() -> None:
               'mu_0': dist.contents.mu_0,
               'mu_1': dist.contents.mu_1,
             }
-    print('stable_create dist result: ', dist_result)
-    print()
+    print('stable_create dist result: {}\n'.format(dist_result))
 
-    # `stable_cdf_point`
+    # Call `stable_cdf_point`
     stable_cdf_point_params = {'dist': dist, 'x': -0.009700000000000002}
     ret = pystable.stable_cdf_point(lib, stable_cdf_point_params)
-    print('stable_cdf_point result: ', ret)
-    print()
+    print('stable_cdf_point result: {}\n'.format(ret))
 
     df_params = read_helpers('cdfs.csv')
     x = []
     for i in df_params['x']:
         x.append(i)
     Nx = len(x)
-    cdf = [0] * Nx
-    cdf_params = {
-            'dist': dist,
-            'x': x,
-            'Nx': Nx,
-            'cdf': cdf,
-        }
+    cdf_params = {'dist': dist, 'x': x, 'Nx': Nx}
 
-    # `stable_cdf`
+    # Call `stable_cdf`
     cdf = pystable.stable_cdf(lib, cdf_params)
     print('stable_cdf result: ', cdf)
 
