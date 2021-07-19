@@ -1,6 +1,7 @@
-import pystable.utils
 import ctypes as ct
 import typing as tp
+
+from pystable import utils
 
 
 def load_libstable() -> ct.CDLL:
@@ -77,6 +78,25 @@ def c_stable_checkparams(lib: ct.CDLL) -> ct.CDLL._FuncPtr:
     return wrap_function(lib, 'stable_checkparams', ret, args)
 
 
+def stable_pdf(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
+    c_fn = c_stable_pdf(lib, params)
+    array_type = ct.c_double * params['Nx']
+    LP_c_double = ct.POINTER(ct.c_double)
+    pdf = (ct.c_double * params['Nx'])()
+
+    c_fn(params['dist'], array_type(*params['x']), params['Nx'], pdf,
+         LP_c_double())
+
+    return list(pdf)
+
+
+def c_stable_pdf(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+    args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint,
+            ct.POINTER(ct.c_double), ct.POINTER(ct.c_double))
+    ret = ct.c_void_p
+    return wrap_function(lib, 'stable_pdf', ret, args)
+
+
 def stable_cdf(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
     c_fn = c_stable_cdf(lib, params)
     array_type = ct.c_double * params['Nx']
@@ -106,3 +126,34 @@ def c_stable_cdf_point(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
     args = (ct.POINTER(STABLE_DIST), ct.c_double, ct.POINTER(ct.c_double))
     ret = ct.c_double
     return wrap_function(lib, 'stable_cdf_point', ret, args)
+
+
+def stable_q(lib: ct.CDLL, params: tp.Dict) -> tp.List[float]:
+    c_fn = c_stable_q(lib, params)
+    array_type = ct.c_double * params['Nq']
+    LP_c_double = ct.POINTER(ct.c_double)
+    inv = (ct.c_double * params['Nq'])()
+
+    c_fn(params['dist'], array_type(*params['q']), params['Nq'], inv,
+         LP_c_double())
+
+    return list(inv)
+
+
+def c_stable_q(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+    args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint,
+            ct.POINTER(ct.c_double), ct.POINTER(ct.c_double))
+    ret = ct.c_void_p
+    return wrap_function(lib, 'stable_q', ret, args)
+
+
+def stable_fit(lib: ct.CDLL, params: tp.Dict) -> int:
+    c_fn = c_stable_fit(lib, params)
+    array_type = ct.c_double * params['length']
+    return c_fn(params['dist'], array_type(*params['data']), params['length'])
+
+
+def c_stable_fit(lib: ct.CDLL, params: tp.Dict) -> ct.CDLL._FuncPtr:
+    args = (ct.POINTER(STABLE_DIST), ct.POINTER(ct.c_double), ct.c_uint)
+    ret = ct.c_int
+    return wrap_function(lib, 'stable_fit', ret, args)

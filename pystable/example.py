@@ -3,6 +3,7 @@ import pandas as pd
 import pystable
 import utils
 
+
 def read_helpers(file_name: str):
     path = os.path.dirname(os.path.realpath(__file__))
     path = os.path.abspath(os.path.join(path, os.pardir))
@@ -10,6 +11,7 @@ def read_helpers(file_name: str):
     path = os.path.abspath(os.path.join(path, file_name))
 
     return pd.read_csv(path)
+
 
 def run() -> None:
     lib = pystable.load_libstable()
