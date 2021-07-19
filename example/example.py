@@ -14,15 +14,19 @@ def read_helpers(file_name: str):
 
 def run() -> None:
     # Load libstable CDLL
-    lib = pystable.load_libstable()
     fit = read_helpers('fit.csv')
+    alpha = fit['alpha']
+    beta = fit['beta']
+    sigma = fit['sigma']
+    mu = fit['mu']
+    parameterization = fit['parameterization']
 
     # Check `fit` validity, returns 0 on success
-    check = pystable.stable_checkparams(lib, fit)
+    check = pystable.checkparams(alpha, beta, sigma, mu, parameterization)
     assert check == 0
 
     # Call `create_stable` input args to create pointer to `StableDist` struct
-    dist = pystable.stable_create(lib, fit)
+    dist = pystable.create(alpha, beta, sigma, mu, parameterization)
     print('DIST', type(dist))
     dist_result = {
               'alpha': dist.contents.alpha,
@@ -34,8 +38,8 @@ def run() -> None:
     print('stable_create dist result: {}\n'.format(dist_result))
 
     # Call `stable_cdf_point`
-    stable_cdf_point_params = {'dist': dist, 'x': -0.009700000000000002}
-    ret = pystable.stable_cdf_point(lib, stable_cdf_point_params)
+    x = -0.009700000000000002
+    ret = pystable.cdf_point(dist, x)
     print('stable_cdf_point result: {}\n'.format(ret))
 
     df_params = read_helpers('cdfs.csv')
@@ -43,10 +47,9 @@ def run() -> None:
     for i in df_params['x']:
         x.append(i)
     Nx = len(x)
-    cdf_params = {'dist': dist, 'x': x, 'Nx': Nx}
 
     # Call `stable_cdf`
-    cdf = pystable.stable_cdf(lib, cdf_params)
+    cdf = pystable.cdf(dist, x, Nx)
     print('stable_cdf result: ', cdf)
 
 
