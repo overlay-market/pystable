@@ -9,7 +9,15 @@ To fit with ML estimation:
 ```python
 import pystable
 
-alpha, beta, loc, scale = pystable.fit(data)
+init_fit = {'alpha': 2, 'beta': 0, 'sigma': 1, 'mu': 0,
+            'parameterization': 1}
+dist = pystable.create(init_fit['alpha'], init_fit['beta'],
+                       init_fit['sigma'], init_fit['mu'],
+                       init_fit['parameterization'])
+
+pystable.fit(dist, data, len(data))
+fit_params = [dist.contents.alpha, dist.contents.beta,
+              dist.contents.sigma, dist.contents.mu_0, dist.contents.mu_1]
 ```
 
 ## Setup
