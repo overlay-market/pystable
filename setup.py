@@ -1,9 +1,10 @@
 import os
 import pathlib
 import shutil
+import setuptools
 
 from distutils.command.build_ext import build_ext
-from distutils.core import setup, Extension
+from distutils.core import Extension
 
 
 libstable_module = Extension('libstable',
@@ -46,4 +47,5 @@ class ExtensionBuild(build_ext):
             os.chmod(dest, mode)
 
 
-setup(ext_modules=[libstable_module], cmdclass=dict(build_ext=ExtensionBuild))
+setuptools.setup(ext_modules=[libstable_module],
+                 cmdclass=dict(build_ext=ExtensionBuild))
