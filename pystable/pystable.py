@@ -187,7 +187,7 @@ def rnd(dist: STABLE_DIST, n: int, seed: int = None,
     lib = load_libstable(path)
     if seed:
         stable_rnd_seed(lib, dist, seed)
-    return stable_rnd(lib, dist, n)
+    return [stable_rnd_point(lib, dist) for _ in range(n)]
 
 
 def stable_rnd_seed(lib: ct.CDLL, dist: STABLE_DIST, seed: int) -> None:
