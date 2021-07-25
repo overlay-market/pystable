@@ -8,6 +8,8 @@ build
 _build
 .cache
 *.so
+*.a
+*.o
 
 # Installer logs
 pip-log.txt
