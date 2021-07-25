@@ -1,6 +1,7 @@
 import os
 import pathlib
 import shutil
+import subprocess
 
 from distutils.command.build_ext import build_ext
 from distutils.core import setup, Extension
@@ -26,6 +27,11 @@ libstable_module = Extension('libstable',
 class ExtensionBuild(build_ext):
     def run(self):
         build_ext.run(self)
+
+        # Make libstable
+        path = os.path.dirname(os.path.realpath(__file__))
+        path = os.path.abspath(os.path.join(path, 'libstable'))
+        subprocess.run(['make'], cwd=path)
 
         # Copy built extensions back to project
         self.check_extensions_list(self.extensions)
