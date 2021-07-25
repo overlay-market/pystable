@@ -14,6 +14,12 @@ class TestPystable(unittest.TestCase):
         base = os.path.join(base, 'helpers/fit.csv')
         return pd.read_csv(base).to_dict(orient='records')[0]
 
+    def get_rnd(self):
+        '''Get rnd sampling parameter'''
+        base = os.path.dirname(os.path.abspath(__file__))
+        base = os.path.join(base, 'helpers/rnd.csv')
+        return pd.read_csv(base).to_dict(orient='records')[0]
+
     def test_checkparams(self):
         '''
         Test `checkparams` wrapper.
@@ -317,18 +323,56 @@ class TestPystable(unittest.TestCase):
         actual = pystable.c_stable_q(lib)
         self.assertEqual('stable_q', actual.__name__)
 
-    @unittest.skip(reason='Need test vectors')
     def test_rnd(self):
-        '''Test `stable_rnd` wrapper'''
-        pass
+        '''Test `stable_rnd_point` wrapper'''
+        fit = self.get_fit()
+        rnd = self.get_rnd()
 
-    @unittest.skip(reason='Need test vectors')
-    def test_stable_rnd(self):
-        '''Test `stable_rnd` high-level function'''
-        pass
+        expected = [fit['alpha'], fit['beta'], fit['sigma'], fit['mu']]
+        dist = pystable.create(fit['alpha'], fit['beta'], fit['sigma'],
+                               fit['mu'], fit['parameterization'])
 
-    def test_c_stable_rnd(self):
-        '''Test `stable_rnd` low-level function'''
+        samples = pystable.rnd(dist, rnd['n'], rnd['seed'])
+
+        init_fit = {'alpha': 2, 'beta': 0, 'sigma': 1, 'mu': 0,
+                    'parameterization': 1}
+        fit_dist = pystable.create(init_fit['alpha'], init_fit['beta'],
+                                   init_fit['sigma'], init_fit['mu'],
+                                   init_fit['parameterization'])
+        pystable.fit(fit_dist, samples, len(samples))
+        actual = [fit_dist.contents.alpha, fit_dist.contents.beta,
+                  fit_dist.contents.sigma, fit_dist.contents.mu_1]
+        # TODO: replace hardcode of tol numbers
+        np.testing.assert_allclose(expected, actual, rtol=1.5e-01)
+        assert fit_dist.contents.mu_0 < 1e-03
+
+    def test_stable_rnd_point(self):
+        '''Test `stable_rnd_point` high-level function'''
         lib = pystable.load_libstable()
-        actual = pystable.c_stable_rnd(lib)
-        self.assertEqual('stable_rnd', actual.__name__)
+        fit = self.get_fit()
+        rnd = self.get_rnd()
+
+        expected = [fit['alpha'], fit['beta'], fit['sigma'], fit['mu']]
+        dist = pystable.create(fit['alpha'], fit['beta'], fit['sigma'],
+                               fit['mu'], fit['parameterization'])
+
+        n = rnd['n']
+        samples = [pystable.stable_rnd_point(lib, dist) for _ in range(n)]
+
+        init_fit = {'alpha': 2, 'beta': 0, 'sigma': 1, 'mu': 0,
+                    'parameterization': 1}
+        fit_dist = pystable.create(init_fit['alpha'], init_fit['beta'],
+                                   init_fit['sigma'], init_fit['mu'],
+                                   init_fit['parameterization'])
+        pystable.fit(fit_dist, samples, len(samples))
+        actual = [fit_dist.contents.alpha, fit_dist.contents.beta,
+                  fit_dist.contents.sigma, fit_dist.contents.mu_1]
+        # TODO: replace hardcode of tol numbers
+        np.testing.assert_allclose(expected, actual, rtol=1.5e-01)
+        assert fit_dist.contents.mu_0 < 1e-03
+
+    def test_c_stable_rnd_point(self):
+        '''Test `stable_rnd_point` low-level function'''
+        lib = pystable.load_libstable()
+        actual = pystable.c_stable_rnd_point(lib)
+        self.assertEqual('stable_rnd_point', actual.__name__)
