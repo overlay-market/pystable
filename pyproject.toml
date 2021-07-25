@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pystable"
-version = "0.2.0"
+version = "0.2.1"
 description = "Python wrapper for the libstable C library"
 authors = [
   "RJ Rybarczyk <rj@rybar.tech>",
