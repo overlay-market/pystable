@@ -37,7 +37,7 @@ def generate_rs(dist: pystable.STABLE_DIST, n: int) -> np.ndarray:
 
 
 def generate_sims(dist: pystable.STABLE_DIST,
-                  n: int, sims: int) -> pd.DataFrame:
+                  period: int, n: int, sims: int) -> pd.DataFrame:
     p_data = []
     for i in range(sims):
         rs = generate_rs(dist, n)
@@ -47,7 +47,7 @@ def generate_sims(dist: pystable.STABLE_DIST,
         p = P0 * dp
         p_data.append(p)
 
-    ts = generate_ts(PERIOD, N)
+    ts = generate_ts(period, n)
     print(f'ts-{i}', ts)
     df = pd.DataFrame(data=[ts, *p_data]).T
 
@@ -80,7 +80,7 @@ def run() -> None:
               'mu_1': dist.contents.mu_1,
             }
     print('stable_create dist result: {}\n'.format(dist_result))
-    df = generate_sims(dist, N, SIMS)
+    df = generate_sims(dist, PERIOD, N, SIMS)
     print('df', df)
     df.to_csv(f"mc-{time.time()}.csv")
 
