@@ -11,6 +11,7 @@ def libstable_path(libstable_path=None) -> str:
     '''Get path to libstable.so'''
     if libstable_path is None:
         platform_id = platform.platform()
+        print('PLATFORM_ID: ', platform_id)
         if "arch" in platform_id:
             # Linux-5.12.14-arch1-1-x86_64-with-glibc2.33
             libstable_path = LIBSTABLE_PATH_ARCH
