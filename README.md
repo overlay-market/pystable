@@ -51,6 +51,11 @@ or
 $ poetry build
 ```
 
+### Test & Coverage Report
+```
+$ poetry run coverage run -m pytest && poetry run coverage report -m
+```
+
 ## TODO
 - [x] `import ctypes as ct`
 - [x] create lib structure
