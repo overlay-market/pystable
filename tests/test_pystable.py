@@ -68,11 +68,16 @@ class TestPystable(unittest.TestCase):
         fit = self.get_fit()
         actual = pystable.create(fit['alpha'], fit['beta'], fit['sigma'],
                                  fit['mu'], fit['parameterization'], None)
-        self.assertAlmostEqual(expected['alpha'], actual.contents.alpha, places=10)
-        self.assertAlmostEqual(expected['beta'], actual.contents.beta, places=10)
-        self.assertAlmostEqual(expected['sigma'], actual.contents.sigma, places=10)
-        self.assertAlmostEqual(expected['mu_0'], actual.contents.mu_0, places=10)
-        self.assertAlmostEqual(expected['mu_1'], actual.contents.mu_1, places=10)
+        self.assertAlmostEqual(expected['alpha'], actual.contents.alpha,
+                               places=10)
+        self.assertAlmostEqual(expected['beta'], actual.contents.beta,
+                               places=10)
+        self.assertAlmostEqual(expected['sigma'], actual.contents.sigma,
+                               places=10)
+        self.assertAlmostEqual(expected['mu_0'], actual.contents.mu_0,
+                               places=10)
+        self.assertAlmostEqual(expected['mu_1'], actual.contents.mu_1,
+                               places=10)
 
     def test_stable_create(self):
         '''Test `stable_create` high-level function'''
@@ -89,11 +94,16 @@ class TestPystable(unittest.TestCase):
                                         fit['sigma'], fit['mu'],
                                         fit['parameterization'])
 
-        self.assertAlmostEqual(expected['alpha'], actual.contents.alpha, places=10)
-        self.assertAlmostEqual(expected['beta'], actual.contents.beta, places=10)
-        self.assertAlmostEqual(expected['sigma'], actual.contents.sigma, places=10)
-        self.assertAlmostEqual(expected['mu_0'], actual.contents.mu_0, places=10)
-        self.assertAlmostEqual(expected['mu_1'], actual.contents.mu_1, places=10)
+        self.assertAlmostEqual(expected['alpha'], actual.contents.alpha,
+                               places=10)
+        self.assertAlmostEqual(expected['beta'], actual.contents.beta,
+                               places=10)
+        self.assertAlmostEqual(expected['sigma'], actual.contents.sigma,
+                               places=10)
+        self.assertAlmostEqual(expected['mu_0'], actual.contents.mu_0,
+                               places=10)
+        self.assertAlmostEqual(expected['mu_1'], actual.contents.mu_1,
+                               places=10)
 
     def test_c_stable_create(self):
         '''Test `stable_create` low-level function'''
