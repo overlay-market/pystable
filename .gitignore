@@ -7,9 +7,9 @@ dist
 build
 _build
 .cache
-*.so
 *.a
 *.o
+/pystable/_extensions/libstable.so
 
 # Installer logs
 pip-log.txt

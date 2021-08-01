@@ -68,11 +68,11 @@ class TestPystable(unittest.TestCase):
         fit = self.get_fit()
         actual = pystable.create(fit['alpha'], fit['beta'], fit['sigma'],
                                  fit['mu'], fit['parameterization'], None)
-        self.assertEqual(expected['alpha'], actual.contents.alpha)
-        self.assertEqual(expected['beta'], actual.contents.beta)
-        self.assertEqual(expected['sigma'], actual.contents.sigma)
-        self.assertEqual(expected['mu_0'], actual.contents.mu_0)
-        self.assertEqual(expected['mu_1'], actual.contents.mu_1)
+        self.assertAlmostEqual(expected['alpha'], actual.contents.alpha, places=10)
+        self.assertAlmostEqual(expected['beta'], actual.contents.beta, places=10)
+        self.assertAlmostEqual(expected['sigma'], actual.contents.sigma, places=10)
+        self.assertAlmostEqual(expected['mu_0'], actual.contents.mu_0, places=10)
+        self.assertAlmostEqual(expected['mu_1'], actual.contents.mu_1, places=10)
 
     def test_stable_create(self):
         '''Test `stable_create` high-level function'''
@@ -89,11 +89,11 @@ class TestPystable(unittest.TestCase):
                                         fit['sigma'], fit['mu'],
                                         fit['parameterization'])
 
-        self.assertEqual(expected['alpha'], actual.contents.alpha)
-        self.assertEqual(expected['beta'], actual.contents.beta)
-        self.assertEqual(expected['sigma'], actual.contents.sigma)
-        self.assertEqual(expected['mu_0'], actual.contents.mu_0)
-        self.assertEqual(expected['mu_1'], actual.contents.mu_1)
+        self.assertAlmostEqual(expected['alpha'], actual.contents.alpha, places=10)
+        self.assertAlmostEqual(expected['beta'], actual.contents.beta, places=10)
+        self.assertAlmostEqual(expected['sigma'], actual.contents.sigma, places=10)
+        self.assertAlmostEqual(expected['mu_0'], actual.contents.mu_0, places=10)
+        self.assertAlmostEqual(expected['mu_1'], actual.contents.mu_1, places=10)
 
     def test_c_stable_create(self):
         '''Test `stable_create` low-level function'''
@@ -218,7 +218,7 @@ class TestPystable(unittest.TestCase):
         actual = pystable.cdf_point(dist, x)
 
         expected = 0.006362143180580383
-        self.assertEqual(expected, actual)
+        self.assertAlmostEqual(expected, actual, places=10)
 
     def test_stable_cdf_point(self):
         '''Test `stable_cdf_point` high-level function'''
@@ -233,7 +233,7 @@ class TestPystable(unittest.TestCase):
         actual = pystable.stable_cdf_point(lib, dist, x)
 
         expected = 0.006362143180580383
-        self.assertEqual(expected, actual)
+        self.assertAlmostEqual(expected, actual, places=10)
 
     def test_c_stable_cdf_point(self):
         '''Test `stable_cdf_point` low-level function'''
