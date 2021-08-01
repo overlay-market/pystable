@@ -218,7 +218,7 @@ class TestPystable(unittest.TestCase):
         actual = pystable.cdf_point(dist, x)
 
         expected = 0.006362143180580383
-        self.assertEqual(expected, actual)
+        self.assertAlmostEqual(expected, actual, places=10)
 
     def test_stable_cdf_point(self):
         '''Test `stable_cdf_point` high-level function'''
@@ -233,7 +233,7 @@ class TestPystable(unittest.TestCase):
         actual = pystable.stable_cdf_point(lib, dist, x)
 
         expected = 0.006362143180580383
-        self.assertEqual(expected, actual)
+        self.assertAlmostEqual(expected, actual, places=10)
 
     def test_c_stable_cdf_point(self):
         '''Test `stable_cdf_point` low-level function'''
