@@ -9,6 +9,7 @@ _build
 .cache
 *.a
 *.o
+/pystable/_extensions/libstable.so
 
 # Installer logs
 pip-log.txt
