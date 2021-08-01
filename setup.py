@@ -1,8 +1,6 @@
 import os
 import pathlib
 import shutil
-import subprocess
-import sys
 
 from distutils.command.build_ext import build_ext
 from distutils.core import setup, Extension
@@ -27,13 +25,6 @@ libstable_module = Extension('libstable',
 # SEE: https://github.com/python-poetry/poetry/issues/11
 class ExtensionBuild(build_ext):
     def run(self):
-        # Make libstable
-        path = os.path.dirname(os.path.realpath(__file__))
-        path = os.path.abspath(os.path.join(path, 'libstable'))
-        proc = subprocess.run(['make'], cwd=path)
-        if proc.returncode != 0:
-            print('Error building libstable')
-            sys.exit(-1)
         build_ext.run(self)
 
         # Copy built extensions back to project
