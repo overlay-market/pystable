@@ -1,3 +1,5 @@
+[![ubuntu-main](https://github.com/overlay-market/pystable/workflows/pystable-ubuntu/badge.svg)](https://github.com/overlay-market/pystable/actions)
+[![macOS-main](https://github.com/overlay-market/pystable/workflows/pystable-macOS/badge.svg)](https://github.com/overlay-market/pystable/actions)
 # pystable
 
 Python wrapper for the [`libstable`](https://www.jstatsoft.org/article/view/v078i01) C library.
