@@ -1,3 +1,7 @@
+[![pystable-ubuntu](https://github.com/overlay-market/pystable/actions/workflows/python-ubuntu.yaml/badge.svg)](https://github.com/overlay-market/pystable/actions/workflows/python-ubuntu.yaml)
+[![pystable-macOS](https://github.com/overlay-market/pystable/actions/workflows/python-macOS.yaml/badge.svg)](https://github.com/overlay-market/pystable/actions/workflows/python-macOS.yaml)
+[![coverage](https://github.com/overlay-market/pystable/tree/main/docs/coverage.svg)](https://github.com/overlay-market/pystable/tree/main/docs/coverage.svg)
+
 # pystable
 
 Python wrapper for the [`libstable`](https://www.jstatsoft.org/article/view/v078i01) C library.
@@ -49,6 +53,11 @@ or
 
 ```
 $ poetry build
+```
+
+### Test & Coverage Report
+```
+$ poetry run coverage run -m pytest && poetry run coverage report -m
 ```
 
 ## TODO
