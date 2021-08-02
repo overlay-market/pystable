@@ -1,5 +1,6 @@
 [![pystable-ubuntu](https://github.com/overlay-market/pystable/actions/workflows/python-ubuntu.yaml/badge.svg)](https://github.com/overlay-market/pystable/actions/workflows/python-ubuntu.yaml)
 [![pystable-macOS](https://github.com/overlay-market/pystable/actions/workflows/python-macOS.yaml/badge.svg)](https://github.com/overlay-market/pystable/actions/workflows/python-macOS.yaml)
+[![coverage](https://github.com/overlay-market/pystable/tree/main/doc/coverage.svg)](https://github.com/overlay-market/pystable/tree/main/doc/coverage.svg)
 
 # pystable
 
